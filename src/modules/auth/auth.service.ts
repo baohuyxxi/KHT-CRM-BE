@@ -11,12 +11,20 @@ import * as bcrypt from 'bcrypt';
 import * as jwt from 'jsonwebtoken';
 import { ConfigService } from '@nestjs/config'; // ✅ import ConfigService
 import { RegisterDto } from './dto/register.dto';
+import { JwtService } from '@nestjs/jwt';
+import {
+  RefreshToken,
+  RefreshTokenDocument,
+} from './schemas/refresh-token.schema';
 
 @Injectable()
 export class AuthService {
   constructor(
     @InjectModel(User.name) private userModel: Model<UserDocument>,
-    private readonly configService: ConfigService, // ✅ inject
+    @InjectModel(RefreshToken.name)
+    private refreshTokenModel: Model<RefreshTokenDocument>,
+    private readonly jwtService: JwtService,
+    private readonly configService: ConfigService,
   ) {}
 
   async register(dto: RegisterDto) {
@@ -59,11 +67,16 @@ export class AuthService {
       // Generate tokens
       const accessToken = jwt.sign(payload, secret, { expiresIn: '1d' });
       const refreshToken = jwt.sign(payload, secret, { expiresIn: '7d' });
-      user.refreshTokens.push(refreshToken);
+      const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 7 ngày
+      await this.refreshTokenModel.create({
+        userId: user._id,
+        token: refreshToken,
+        expiresAt,
+      });
       await user.save();
 
-      // Loại bỏ password và refreshToken khỏi user
-      const { password: _, refreshTokens: __, ...safeUser } = user.toObject();
+      // Loại bỏ password khỏi user
+      const { password: _, ...safeUser } = user.toObject();
       return {
         accessToken,
         refreshToken,
@@ -78,21 +91,23 @@ export class AuthService {
     try {
       const secret = this.configService.get<string>('app.JWT_SECRET');
       if (!secret) throw new Error('JWT_SECRET is not defined');
-      // Verify refreshToken
-      const payload = jwt.verify(refreshToken, secret) as any;
+      let payload: any;
 
-      // Tìm user trong DB
-      const user = await this.userModel.findById(payload.sub);
-      if (!user) throw new UnauthorizedException('User not found');
-
-      // Kiểm tra refreshToken có hợp lệ không
-      if (!user.refreshTokens.includes(refreshToken)) {
-        throw new UnauthorizedException('Invalid refresh token');
+      try {
+        payload = jwt.verify(refreshToken, secret);
+      } catch {
+        throw new UnauthorizedException('Invalid or expired refresh token');
       }
 
-      // Tạo accessToken mới
+      // Kiểm tra token có trong DB không
+      const tokenDoc = await this.refreshTokenModel.findOne({
+        token: refreshToken,
+      });
+      if (!tokenDoc)
+        throw new UnauthorizedException('Refresh token not found or expired');
+
       const newAccessToken = jwt.sign(
-        { sub: user._id, tenantId: user.tenantId, role: user.role },
+        { sub: payload.sub, tenantId: payload.tenantId, role: payload.role },
         secret,
         { expiresIn: '1d' },
       );
@@ -112,47 +127,13 @@ export class AuthService {
       throw new UnauthorizedException('Invalid or expired refresh token');
     }
   }
-  async logout(userId: string, refreshToken: string) {
-    const user = await this.userModel.findOne({ _id: userId });
-    if (!user) throw new UnauthorizedException('Invalid credentials');
-
-    user.refreshTokens = user.refreshTokens.filter(
-      (token) => token !== refreshToken,
-    );
-    await user.save();
-
+  async logout(refreshToken: string) {
+    await this.refreshTokenModel.deleteOne({ token: refreshToken });
     return { success: true, message: 'Logged out successfully' };
   }
 
-  async logoutAll(userId: string, refreshToken?: string) {
-    const user = await this.userModel.findOne({ _id: userId });
-    if (!user) throw new UnauthorizedException('Invalid credentials');
-
-    user.refreshTokens = refreshToken ? [refreshToken] : [];
-    await user.save();
-
+  async logoutAll(userId: string) {
+    await this.refreshTokenModel.deleteMany({ userId });
     return { success: true, message: 'Logged out from all devices' };
-  }
-  async changePassword(
-    userId: string,
-    oldPassword: string,
-    newPassword: string,
-  ) {
-    const user = await this.userModel.findById(userId);
-    if (!user) throw new UnauthorizedException('User not found');
-
-    // So sánh mật khẩu cũ
-    const isMatch = await bcrypt.compare(oldPassword, user.password);
-    if (!isMatch) throw new BadRequestException('Old password is incorrect');
-
-    // Hash mật khẩu mới
-    const hashed = await bcrypt.hash(newPassword, 10);
-    user.password = hashed;
-
-    // Option: clear tất cả refreshTokens để buộc login lại
-    user.refreshTokens = [];
-
-    await user.save();
-    return { success: true, message: 'Password changed successfully' };
   }
 }

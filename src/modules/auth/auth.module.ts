@@ -10,6 +10,11 @@ import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { JwtStrategy } from './jwt.strategy';
 
+import {
+  RefreshToken,
+  RefreshTokenSchema,
+} from './schemas/refresh-token.schema';
+
 @Module({
   imports: [
     ConfigModule,
@@ -22,7 +27,10 @@ import { JwtStrategy } from './jwt.strategy';
         signOptions: { expiresIn: '1d' },
       }),
     }),
-    MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
+    MongooseModule.forFeature([
+      { name: User.name, schema: UserSchema },
+      { name: RefreshToken.name, schema: RefreshTokenSchema },
+    ]),
   ],
   providers: [AuthService, JwtStrategy], // 👈 nhớ add JwtStrategy
   controllers: [AuthController],

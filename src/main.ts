@@ -6,6 +6,7 @@ import { ResponseInterceptor } from './common/interceptors/response.interceptor'
 import { AllExceptionsFilter } from './common/filters/all-exceptions.filter';
 
 async function bootstrap() {
+  process.env.TZ = 'UTC';
   const app = await NestFactory.create(AppModule);
   const configService = app.get(ConfigService);
 
