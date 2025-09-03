@@ -1,0 +1,15 @@
+extends ./layout.pug
+
+block body
+  .container
+    .header
+      h1 Xác thực email
+    .content
+      h2 Xin chào #{name}!
+      p Vui lòng bấm nút bên dưới để xác thực địa chỉ email của bạn:
+      p
+        a.btn(href=verifyLink target="_blank") Xác thực email
+      p Liên kết sẽ hết hạn sau #{expiresIn} phút. Nếu bạn không yêu cầu, hãy bỏ qua email này.
+    .footer
+      p © #{new Date().getFullYear()} Kim Hong Thinh JSC. All rights reserved.
+        p 945/3 Ấp 3, Sơn Đông, Bến Tre

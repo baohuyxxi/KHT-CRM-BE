@@ -1,0 +1,15 @@
+extends ./layout.pug
+
+block body
+  .container
+    .header
+      h1 #{title}
+    .content
+      h2 Xin chào #{name}!
+      p #{message}
+      if actionText && actionLink
+        p
+          a.btn(href=actionLink target="_blank") #{actionText}
+    .footer
+      p © #{new Date().getFullYear()} Kim Hong Thinh JSC. All rights reserved.
+        p 945/3 Ấp 3, Sơn Đông, Bến Tre
