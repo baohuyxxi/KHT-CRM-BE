@@ -16,11 +16,11 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 
   validate(payload: any) {
     // Payload từ jwt.sign()
-    if (!payload || !payload.sub) {
+    if (!payload || !payload.userId) {
       throw new UnauthorizedException();
     }
     return {
-      userId: payload.sub,
+      userId: payload.userId,
       tenantId: payload.tenantId,
       role: payload.role,
       permissions: payload.permissions,

@@ -9,6 +9,7 @@ import { User, UserSchema } from './schemas/user.schema';
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { JwtStrategy } from './jwt.strategy';
+import { RoleSchema, Role } from './schemas/role.schema';
 
 import {
   RefreshToken,
@@ -30,10 +31,11 @@ import {
     MongooseModule.forFeature([
       { name: User.name, schema: UserSchema },
       { name: RefreshToken.name, schema: RefreshTokenSchema },
+      { name: Role.name, schema: RoleSchema },
     ]),
   ],
   providers: [AuthService, JwtStrategy], // 👈 nhớ add JwtStrategy
   controllers: [AuthController],
   exports: [AuthService], // 👈 export service nếu cần ở module khác
 })
-export class AuthModule { }
+export class AuthModule {}

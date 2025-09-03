@@ -10,6 +10,7 @@ import { TenantModule } from './modules/tenant/tenant.module';
 import { UsersModule } from './modules/user/users.module';
 import { TestController } from './modules/Test/test.controller';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
+import { ResourceModule } from './modules/resource/resource.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -31,8 +32,9 @@ import { CloudinaryModule } from './cloudinary/cloudinary.module';
     TenantModule,
     CloudinaryModule,
     UsersModule,
+    ResourceModule,
   ],
   controllers: [TestController],
   providers: [DatabaseService],
 })
-export class AppModule { }
+export class AppModule {}

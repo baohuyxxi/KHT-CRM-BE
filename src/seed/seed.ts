@@ -1,16 +1,13 @@
 import { NestFactory } from '@nestjs/core';
 import { SeedModule } from './seed.module';
-import { SeedService } from './seed.service';
+import { RoleSeeder } from './role.seeder';
 
 async function bootstrap() {
-  const appContext = await NestFactory.createApplicationContext(SeedModule);
-  const seedService = appContext.get(SeedService);
+  const app = await NestFactory.createApplicationContext(SeedModule);
 
-  await seedService.seed(); // chạy hàm seed chính
-  await appContext.close();
+  const seeder = app.get(RoleSeeder);
+  await seeder.seed();
+
+  await app.close();
 }
-
-bootstrap().catch((err) => {
-  console.error('❌ Seed failed', err);
-  process.exit(1);
-});
+bootstrap();
