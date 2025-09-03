@@ -53,4 +53,40 @@ export class UsersService {
     await user.save();
     return { success: true, message: 'Password changed successfully' };
   }
+
+  // 🔹 Admin lấy toàn bộ user
+  async findAll(): Promise<User[]> {
+    return this.userModel.find().select('-password -refreshTokens');
+  }
+
+  // 🔹 Admin update user bất kỳ
+  async updateAnyUser(targetUserId: string, dto: UpdateUserDto): Promise<User> {
+    const updated = await this.userModel
+      .findByIdAndUpdate(targetUserId, dto, { new: true })
+      .select('-password -refreshTokens');
+    if (!updated) throw new NotFoundException('User not found');
+    return updated;
+  }
+
+  // 🔹 Admin xóa user
+  async deleteUser(userId: string) {
+    const user = await this.userModel.findByIdAndDelete(userId);
+    if (!user) throw new NotFoundException('User not found');
+    await this.refreshTokenModel.deleteMany({ userId });
+    return { success: true, message: 'User deleted successfully' };
+  }
+  // 🔹 Admin reset password cho user khác
+  async resetPassword(targetUserId: string, newPassword: string) {
+    const user = await this.userModel.findById(targetUserId);
+    if (!user) throw new NotFoundException('User not found');
+
+    const hashed = await bcrypt.hash(newPassword, 10);
+    user.password = hashed;
+
+    // clear refresh tokens để bắt buộc login lại
+    await this.refreshTokenModel.deleteMany({ userId: targetUserId });
+
+    await user.save();
+    return { success: true, message: 'Password reset successfully' };
+  }
 }

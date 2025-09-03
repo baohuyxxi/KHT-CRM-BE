@@ -11,7 +11,7 @@ import { UsersModule } from './modules/user/users.module';
 import { TestController } from './modules/Test/test.controller';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
 import { MailModule } from './modules/mail/mail.module';
-
+import { ResourceModule } from './modules/resource/resource.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -34,6 +34,7 @@ import { MailModule } from './modules/mail/mail.module';
     CloudinaryModule,
     UsersModule,
     MailModule,
+    ResourceModule,
   ],
   controllers: [TestController],
   providers: [DatabaseService],

@@ -5,6 +5,9 @@ import { Types } from 'mongoose';
 import { ApiTags, ApiOperation, ApiResponse, ApiBody } from '@nestjs/swagger';
 import { RegisterDto } from './dto/register.dto';
 import { JwtAuthGuard } from './jwt-auth.guard';
+import { PermissionsGuard } from './guards/permissions.guard';
+import { Permissions } from './decorators/permissions.decorator';
+import { Permission } from './permissions.enum';
 
 @ApiTags('Auth') // Gom nhóm API "Auth"
 @Controller('auth')
@@ -12,8 +15,10 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('register')
+  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @Permissions(Permission.USER_CREATE_ANY) // chỉ ai có quyền này mới tạo được
   @ApiOperation({ summary: 'Register a new user under a tenant' })
-  @ApiResponse({ status: 201, description: 'User registered successfully' })
+  @ApiResponse({ status: 200, description: 'User registered successfully' })
   async register(@Body() dto: RegisterDto) {
     const user = await this.authService.register(dto);
     return {
@@ -44,6 +49,7 @@ export class AuthController {
   }
 
   @Post('logout')
+  @UseGuards(JwtAuthGuard)
   async logout(@Request() req: any, @Body() body: { refreshToken: string }) {
     return this.authService.logout(body.refreshToken);
   }
@@ -54,9 +60,8 @@ export class AuthController {
     @Request() req: any,
     @Body() body: { refreshToken?: string },
   ) {
-    const userId = req.user.sub;
+    const userId = req.user.userId;
     const deleted = await this.authService.logoutAll(userId, body.refreshToken);
-
     return {
       success: true,
       message: `Logged out successfully. ${deleted} refresh token(s) removed.`,
