@@ -44,7 +44,7 @@ export class AuthController {
   }
 
   @Post('logout')
-  logout(@Request() req: any, @Body() body: { refreshToken: string }) {
+  async logout(@Request() req: any, @Body() body: { refreshToken: string }) {
     return this.authService.logout(body.refreshToken);
   }
 
@@ -54,7 +54,12 @@ export class AuthController {
     @Request() req: any,
     @Body() body: { refreshToken?: string },
   ) {
-    const userId = req.user.userId;
-    return this.authService.logoutAll(userId);
+    const userId = req.user.sub;
+    const deleted = await this.authService.logoutAll(userId, body.refreshToken);
+
+    return {
+      success: true,
+      message: `Logged out successfully. ${deleted} refresh token(s) removed.`,
+    };
   }
 }
