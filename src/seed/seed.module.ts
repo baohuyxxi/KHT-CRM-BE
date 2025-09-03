@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { TenantModule } from 'src/modules/tenant/tenant.module';
-import { SeedService } from './seed.service';
+import { RoleSeeder } from './role.seeder';
 import appConfig from '../config/environment.config';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { Role, RoleSchema } from 'src/modules/auth/schemas/role.schema';
 
 @Module({
   imports: [
@@ -15,8 +15,9 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
         dbName: config.get<string>('app.DATABASE_NAME'),
       }),
     }),
-    TenantModule,
+    MongooseModule.forFeature([{ name: Role.name, schema: RoleSchema }]),
   ],
-  providers: [SeedService],
+  providers: [RoleSeeder],
+  exports: [RoleSeeder],
 })
 export class SeedModule {}
