@@ -57,7 +57,7 @@ export class AuthService {
       const isMatch = await bcrypt.compare(password, user.password);
       if (!isMatch) throw new UnauthorizedException('Invalid credentials');
       const payload = {
-        sub: user._id,
+        userId: user._id,
         tenantId: user.tenantId,
         role: user.role,
         permissions: user.permissions || [],
@@ -108,7 +108,11 @@ export class AuthService {
         throw new UnauthorizedException('Refresh token not found or expired');
 
       const newAccessToken = jwt.sign(
-        { sub: payload.sub, tenantId: payload.tenantId, role: payload.role },
+        {
+          userId: payload.userId,
+          tenantId: payload.tenantId,
+          role: payload.role,
+        },
         secret,
         { expiresIn: '1d' },
       );
@@ -134,18 +138,20 @@ export class AuthService {
   }
 
   async logoutAll(userId: string, keepRefreshToken?: string): Promise<number> {
+    const userObjectId = new Types.ObjectId(userId);
     let result: DeleteResult;
+
     if (keepRefreshToken) {
-      // Xoá tất cả trừ token hiện tại
       result = await this.refreshTokenModel.deleteMany({
-        userId,
+        userId: userObjectId,
         token: { $ne: keepRefreshToken },
       });
     } else {
       // Xoá toàn bộ refreshToken của user
-      result = await this.refreshTokenModel.deleteMany({ userId });
+      result = await this.refreshTokenModel.deleteMany({
+        userId: userObjectId,
+      });
     }
-
     return result.deletedCount || 0; // chỉ trả số lượng token đã xoá
   }
 }
