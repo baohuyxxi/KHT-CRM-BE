@@ -44,6 +44,7 @@ export class AuthController {
   }
 
   @Post('logout')
+  @UseGuards(JwtAuthGuard)
   async logout(@Request() req: any, @Body() body: { refreshToken: string }) {
     return this.authService.logout(body.refreshToken);
   }
@@ -54,7 +55,7 @@ export class AuthController {
     @Request() req: any,
     @Body() body: { refreshToken?: string },
   ) {
-    const userId = req.user.sub;
+    const userId = req.user.userId;
     const deleted = await this.authService.logoutAll(userId, body.refreshToken);
 
     return {
