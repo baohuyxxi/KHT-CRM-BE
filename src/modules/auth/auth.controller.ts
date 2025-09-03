@@ -57,7 +57,6 @@ export class AuthController {
   ) {
     const userId = req.user.userId;
     const deleted = await this.authService.logoutAll(userId, body.refreshToken);
-
     return {
       success: true,
       message: `Logged out successfully. ${deleted} refresh token(s) removed.`,
