@@ -44,10 +44,8 @@ export class AuthController {
   }
 
   @Post('logout')
-  @UseGuards(JwtAuthGuard)
   async logout(@Request() req: any, @Body() body: { refreshToken: string }) {
-    const userId = req.user.userId;
-    return this.authService.logout(userId, body.refreshToken);
+    return this.authService.logout(body.refreshToken);
   }
 
   @Post('logout-all')
@@ -56,22 +54,12 @@ export class AuthController {
     @Request() req: any,
     @Body() body: { refreshToken?: string },
   ) {
-    const userId = req.user.userId; // ✅ chứ không phải sub
-    return this.authService.logoutAll(userId, body.refreshToken);
-  }
-  @Post('change-password')
-  @UseGuards(JwtAuthGuard)
-  @ApiOperation({ summary: 'Change password' })
-  @ApiResponse({ status: 200, description: 'Password changed successfully' })
-  async changePassword(
-    @Request() req: any,
-    @Body() body: { oldPassword: string; newPassword: string },
-  ) {
-    const userId = req.user.userId; // ✅ từ JwtStrategy
-    return this.authService.changePassword(
-      userId,
-      body.oldPassword,
-      body.newPassword,
-    );
+    const userId = req.user.sub;
+    const deleted = await this.authService.logoutAll(userId, body.refreshToken);
+
+    return {
+      success: true,
+      message: `Logged out successfully. ${deleted} refresh token(s) removed.`,
+    };
   }
 }

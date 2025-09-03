@@ -7,6 +7,7 @@ import databaseConfig from './config/database.config';
 import { DatabaseService } from './config/database.service';
 import { AuthModule } from './modules/auth/auth.module';
 import { TenantModule } from './modules/tenant/tenant.module';
+import { UsersModule } from './modules/user/users.module';
 import { TestController } from './modules/Test/test.controller';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
 @Module({
@@ -29,8 +30,9 @@ import { CloudinaryModule } from './cloudinary/cloudinary.module';
     AuthModule,
     TenantModule,
     CloudinaryModule,
+    UsersModule,
   ],
   controllers: [TestController],
   providers: [DatabaseService],
 })
-export class AppModule {}
+export class AppModule { }
