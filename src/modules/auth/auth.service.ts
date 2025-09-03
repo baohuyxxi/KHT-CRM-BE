@@ -16,6 +16,7 @@ import {
   RefreshToken,
   RefreshTokenDocument,
 } from './schemas/refresh-token.schema';
+import { DeleteResult } from 'mongodb';
 
 @Injectable()
 export class AuthService {
@@ -132,8 +133,19 @@ export class AuthService {
     return { success: true, message: 'Logged out successfully' };
   }
 
-  async logoutAll(userId: string) {
-    await this.refreshTokenModel.deleteMany({ userId });
-    return { success: true, message: 'Logged out from all devices' };
+  async logoutAll(userId: string, keepRefreshToken?: string): Promise<number> {
+    let result: DeleteResult;
+    if (keepRefreshToken) {
+      // Xoá tất cả trừ token hiện tại
+      result = await this.refreshTokenModel.deleteMany({
+        userId,
+        token: { $ne: keepRefreshToken },
+      });
+    } else {
+      // Xoá toàn bộ refreshToken của user
+      result = await this.refreshTokenModel.deleteMany({ userId });
+    }
+
+    return result.deletedCount || 0; // chỉ trả số lượng token đã xoá
   }
 }
