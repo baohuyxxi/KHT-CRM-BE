@@ -5,9 +5,10 @@ import { MongooseModule } from '@nestjs/mongoose';
 import env from './config/environment.config';
 import databaseConfig from './config/database.config';
 import { DatabaseService } from './config/database.service';
-import { AuthModule } from './auth/auth.module';
-import { TenantModule } from './tenant/tenant.module';
-import { TestController } from './Test/test.controller';
+import { AuthModule } from './modules/auth/auth.module';
+import { TenantModule } from './modules/tenant/tenant.module';
+import { TestController } from './modules/Test/test.controller';
+import { CloudinaryModule } from './cloudinary/cloudinary.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -27,6 +28,7 @@ import { TestController } from './Test/test.controller';
     }),
     AuthModule,
     TenantModule,
+    CloudinaryModule,
   ],
   controllers: [TestController],
   providers: [DatabaseService],

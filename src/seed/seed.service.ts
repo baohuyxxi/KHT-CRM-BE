@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { TenantService } from '../tenant/tenant.service';
+import { TenantService } from 'src/modules/tenant/tenant.service';
 
 @Injectable()
 export class SeedService {

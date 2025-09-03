@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { TenantModule } from '../tenant/tenant.module';
+import { TenantModule } from 'src/modules/tenant/tenant.module';
 import { SeedService } from './seed.service';
 import appConfig from '../config/environment.config';
 import { ConfigModule, ConfigService } from '@nestjs/config';
