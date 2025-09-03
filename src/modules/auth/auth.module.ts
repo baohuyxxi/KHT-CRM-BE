@@ -36,4 +36,4 @@ import {
   controllers: [AuthController],
   exports: [AuthService], // 👈 export service nếu cần ở module khác
 })
-export class AuthModule {}
+export class AuthModule { }
