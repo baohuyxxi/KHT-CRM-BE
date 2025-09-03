@@ -7,7 +7,9 @@ import databaseConfig from './config/database.config';
 import { DatabaseService } from './config/database.service';
 import { AuthModule } from './modules/auth/auth.module';
 import { TenantModule } from './modules/tenant/tenant.module';
+import { UsersModule } from './modules/user/users.module';
 import { TestController } from './modules/Test/test.controller';
+
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -27,6 +29,7 @@ import { TestController } from './modules/Test/test.controller';
     }),
     AuthModule,
     TenantModule,
+    UsersModule,
   ],
   controllers: [TestController],
   providers: [DatabaseService],

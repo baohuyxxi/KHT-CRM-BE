@@ -30,9 +30,6 @@ export class User {
   isActive: boolean;
 
   @Prop({ type: [String], default: [] })
-  refreshTokens: string[];
-
-  @Prop({ type: [String], default: [] })
   permissions: string[];
 }
 
