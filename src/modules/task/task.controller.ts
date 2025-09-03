@@ -1,8 +1,8 @@
 import { Controller, Get, UseGuards } from '@nestjs/common';
-import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
-import { Permissions } from 'src/auth/decorators/permissions.decorator';
-import { PermissionsGuard } from 'src/auth/guards/permissions.guard';
-import { Permission } from 'src/auth/permissions.enum';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { Permissions } from '../auth/decorators/permissions.decorator';
+import { PermissionsGuard } from '../auth/guards/permissions.guard';
+import { Permission } from '../auth/permissions.enum';
 
 @Controller('tasks')
 export class UserController {
