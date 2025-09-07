@@ -1,0 +1,15 @@
+extends ./layout.pug
+
+block body
+  .container
+    .header
+      h1 Welcome to Our Service 🚀
+    .content
+      h2 Xin chào #{name}!
+      p Cảm ơn bạn đã đăng ký dịch vụ của chúng tôi. Bắt đầu ngay bằng cách nhấn vào nút bên dưới:
+      p
+        a.btn(href=link target="_blank") Bắt đầu ngay
+      p Nếu bạn cần hỗ trợ, vui lòng trả lời email này hoặc truy cập trung tâm hỗ trợ.
+    .footer
+      p © #{new Date().getFullYear()} Kim Hong Thinh JSC. All rights reserved.
+      p 945/3 Ấp 3, Sơn Đông, Bến Tre
