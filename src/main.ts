@@ -7,14 +7,15 @@ import { AllExceptionsFilter } from './common/filters/all-exceptions.filter';
 
 async function bootstrap() {
   process.env.TZ = 'UTC';
+
   const app = await NestFactory.create(AppModule);
   const configService = app.get(ConfigService);
 
   const nodeEnv = configService.get<string>('NODE_ENV', 'development');
 
-  // Port must come from Fly.io env in production
+  // Port Fly.io injects via environment variable
   const port = process.env.PORT
-    ? parseInt(process.env.PORT)
+    ? parseInt(process.env.PORT, 10)
     : configService.get<number>('APP_PORT', 3000);
   const host =
     nodeEnv === 'development'
@@ -24,12 +25,14 @@ async function bootstrap() {
   // Global prefix
   app.setGlobalPrefix('api/v1');
 
-  // Global interceptors & filters
+  // Enable CORS
   app.enableCors();
+
+  // Global interceptors & filters
   app.useGlobalInterceptors(new ResponseInterceptor());
   app.useGlobalFilters(new AllExceptionsFilter());
 
-  // Swagger only for development
+  // Swagger for development only
   if (nodeEnv === 'development') {
     const config = new DocumentBuilder()
       .setTitle('CRM API')
@@ -44,7 +47,7 @@ async function bootstrap() {
     console.log(`📘 Swagger Docs: http://${host}:${port}/api-docs`);
   }
 
-  console.log(`🚀 Server running on ${host}:${port}`);
+  console.log(`🚀 Server starting on ${host}:${port}...`);
   await app.listen(port, host);
 }
 
