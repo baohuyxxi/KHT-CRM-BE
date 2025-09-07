@@ -39,4 +39,4 @@ import { ResourceModule } from './modules/resource/resource.module';
   controllers: [TestController],
   providers: [DatabaseService],
 })
-export class AppModule { }
+export class AppModule {}
