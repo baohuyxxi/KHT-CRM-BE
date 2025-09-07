@@ -36,8 +36,11 @@ async function bootstrap() {
 
   app.useGlobalInterceptors(new ResponseInterceptor());
   app.useGlobalFilters(new AllExceptionsFilter());
-  await app.listen(port, host);
-
-  console.log(`🚀 Server running at http://${host}:${port}/`);
+  if (nodeEnv === 'development') {
+    await app.listen(port, host);
+    console.log(`🚀 Server running at http://${host}:${port}/`);
+  } else {
+    await app.listen(port); // production => 0.0.0.0
+  }
 }
 bootstrap();
