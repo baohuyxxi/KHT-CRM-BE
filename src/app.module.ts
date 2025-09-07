@@ -12,6 +12,7 @@ import { TestController } from './modules/Test/test.controller';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
 import { MailModule } from './modules/mail/mail.module';
 import { ResourceModule } from './modules/resource/resource.module';
+
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -23,9 +24,7 @@ import { ResourceModule } from './modules/resource/resource.module';
       useFactory: (configService: ConfigService) => {
         const uri = configService.get<string>('database.uri');
         const dbName = configService.get<string>('database.name');
-
-        console.log('Connected to MongoDB ✅');
-
+        console.log('Connecting to MongoDB:', uri);
         return { uri, dbName };
       },
     }),
