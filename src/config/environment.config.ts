@@ -9,7 +9,7 @@ export default registerAs('app', () => ({
   API_KEY: process.env.API_KEY,
   API_SECRET: process.env.API_SECRET,
   AUTHOR: process.env.AUTHOR || 'Unknown',
-  NODE_ENV: process.env.NODE_ENV || 'development',
+  NODE_ENV: process.env.NODE_ENV || 'production',
   JWT_SECRET: process.env.JWT_SECRET || 'your_jwt_secret',
   JWT_REFRESH_SECRET:
     process.env.JWT_REFRESH_SECRET || 'your_jwt_refresh_secret',
