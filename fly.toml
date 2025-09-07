@@ -1,13 +1,12 @@
-# fly.toml generated for kht-crm
 app = "kht-crm"
 primary_region = "sin"
 
 [build]
-  # Bạn có thể thêm dockerfile nếu muốn
+  # Nếu cần Dockerfile, uncomment
   # dockerfile = "Dockerfile"
 
 [http_service]
-  internal_port = 3000   # NestJS default port, Fly sẽ map PORT env variable
+  internal_port = 3000
   force_https = true
   auto_stop_machines = "stop"
   auto_start_machines = true
