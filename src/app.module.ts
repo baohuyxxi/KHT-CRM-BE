@@ -10,6 +10,7 @@ import { TenantModule } from './modules/tenant/tenant.module';
 import { UsersModule } from './modules/user/users.module';
 import { TestController } from './modules/Test/test.controller';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
+import { MailModule } from './modules/mail/mail.module';
 import { ResourceModule } from './modules/resource/resource.module';
 @Module({
   imports: [
@@ -32,9 +33,10 @@ import { ResourceModule } from './modules/resource/resource.module';
     TenantModule,
     CloudinaryModule,
     UsersModule,
+    MailModule,
     ResourceModule,
   ],
   controllers: [TestController],
   providers: [DatabaseService],
 })
-export class AppModule {}
+export class AppModule { }
