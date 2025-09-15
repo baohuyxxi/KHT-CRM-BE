@@ -36,12 +36,25 @@ export class AuthService {
 
     const exist = await this.userModel.findOne({ email: dto.email, tenantId });
     if (exist) throw new ConflictException('Người dùng đã tồn tại');
-    // 🔎 Lấy role mặc định là "user"
+
+    // Lấy role mặc định
     const defaultRole = await this.roleModel.findOne({ name: 'user' });
-    if (!defaultRole) {
+    if (!defaultRole)
       throw new InternalServerErrorException('Không tìm thấy vai trò mặc định');
+
+    // Tạo userId tự động
+    const lastUser = await this.userModel
+      .find({})
+      .sort({ userId: -1 })
+      .limit(1);
+    let nextNumber = 1;
+    if (lastUser.length > 0) {
+      nextNumber = parseInt(lastUser[0].userId.replace('USR', '')) + 1;
     }
+    const userId = `USR${nextNumber.toString().padStart(5, '0')}`;
+
     const hashed = await bcrypt.hash(dto.password, 10);
+
     const user = new this.userModel({
       tenantId,
       email: dto.email,
@@ -49,8 +62,10 @@ export class AuthService {
       name: dto.name,
       role: defaultRole._id,
       isActive: true,
+      userId, // ✅ chắc chắn có giá trị
       permissions: [],
     });
+
     const saved = await user.save();
 
     const { password, ...safeUser } = saved.toObject();

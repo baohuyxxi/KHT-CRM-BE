@@ -14,7 +14,7 @@ import { CreateTenantDto } from './dto/create-tenant.dto';
 import {
   ResponseDtoFactory,
   ResponseArrayDtoFactory,
-} from 'src/common/dto/response.dto';
+} from '../../common/dto/response.dto';
 
 @ApiTags('Tenants')
 @Controller('tenants')

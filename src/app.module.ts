@@ -13,6 +13,7 @@ import { CloudinaryModule } from './cloudinary/cloudinary.module';
 import { MailModule } from './modules/mail/mail.module';
 import { ResourceModule } from './modules/resource/resource.module';
 import { CustomerModule } from './modules/customer/customer.module';
+import { EmployeesModule } from './modules/employees/employees.module';
 
 @Module({
   imports: [
@@ -35,9 +36,10 @@ import { CustomerModule } from './modules/customer/customer.module';
     UsersModule,
     MailModule,
     ResourceModule,
-    CustomerModule
+    CustomerModule,
+    EmployeesModule,
   ],
   controllers: [TestController],
   providers: [DatabaseService],
 })
-export class AppModule { }
+export class AppModule {}

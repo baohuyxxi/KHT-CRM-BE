@@ -7,10 +7,10 @@ import { UserSeeder } from './user.seeder';
 async function bootstrap() {
   const app = await NestFactory.createApplicationContext(SeedModule);
 
-  const roleSeeder = app.get(RoleSeeder);
+  // const roleSeeder = app.get(RoleSeeder);
   const userSeeder = app.get(UserSeeder);
 
-  await roleSeeder.seed();
+  // await roleSeeder.seed();
   await userSeeder.seed();
 
   await app.close();
