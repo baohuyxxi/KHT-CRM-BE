@@ -11,13 +11,13 @@ export enum CustomerType {
 
 @Schema({ timestamps: true, collection: 'customers' })
 export class Customer {
-    @Prop({ type: String, required: true, unique: true })
-    customerCode: string; // Mã KH (CUS0000001)
+    @Prop({ type: String, unique: true })
+    cusId: string; // Mã KH (CUS0000001)
 
-    @Prop({ type: String, required: true })
-    owner: string;
+    @Prop({ type: Types.ObjectId, ref: 'User', required: true })
+    owner: Types.ObjectId;
 
-    @Prop({ type: String, required: true, unique: true })
+    @Prop({ type: String, unique: true, index: true })
     citizenId: string; // CCCD
 
     @Prop({ type: String })
@@ -44,24 +44,15 @@ export class Customer {
     @Prop({ type: Boolean, default: true })
     active: boolean;
 
-    @Prop({ type: String, enum: Object.values(CustomerType), required: true })
+    @Prop({ type: String, enum: CustomerType, required: true })
     customerType: CustomerType;
-
-    @Prop({ type: Types.ObjectId, ref: 'User' })
-    createdBy?: Types.ObjectId;
-
-    @Prop({ type: Date })
-    createdAt?: Date;
-
-    @Prop({ type: Date })
-    updatedAt?: Date;
 }
 
 export const CustomerSchema = SchemaFactory.createForClass(Customer);
 
 @Schema({ collection: 'counters' })
 export class Counter {
-    @Prop({ type: String, required: true, unique: true })
+    @Prop({ type: String, required: true })
     _id: string;
 
     @Prop({ type: Number, default: 0 })
@@ -70,18 +61,23 @@ export class Counter {
 
 export const CounterSchema = SchemaFactory.createForClass(Counter);
 
-CustomerSchema.pre<CustomerDocument>('save', async function (next) {
-    if (this.isNew && !this.customerCode) {
-        const counterModel = this.db.model<Counter & Document>('Counter');
+CustomerSchema.post<CustomerDocument>('save', async function (doc, next) {
+    try {
+        if (doc.isNew && !doc.cusId) {
+            const counterModel = this.db.model<Counter & Document>('Counter');
 
-        const counter = await counterModel.findByIdAndUpdate(
-            { _id: 'customer' },
-            { $inc: { seq: 1 } },
-            { new: true, upsert: true }
-        );
+            const counter = await counterModel.findByIdAndUpdate(
+                { _id: 'customers' },
+                { $inc: { seq: 1 } },
+                { new: true, upsert: true }
+            );
 
-        const seqNumber = counter.seq;
-        this.customerCode = 'KH' + seqNumber.toString().padStart(7, '0');
+            const seqNumber = counter.seq;
+            doc.cusId = 'KH' + seqNumber.toString().padStart(7, '0');
+            await doc.updateOne({ cusId: doc.cusId });
+        }
+        next();
+    } catch (err) {
+        next(err);
     }
-    next();
 });
