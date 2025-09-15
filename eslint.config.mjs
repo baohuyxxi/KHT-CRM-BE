@@ -34,6 +34,7 @@ export default tseslint.config(
       '@typescript-eslint/no-unsafe-assignment': 'off',
       '@typescript-eslint/no-unused-vars': 'off',
       '@typescript-eslint/no-unsafe-return': 'off',
+      'eslint-disable-next-line @typescript-eslint/require-await': 'off',
     },
   },
 );

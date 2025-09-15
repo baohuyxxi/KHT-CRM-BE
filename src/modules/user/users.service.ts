@@ -20,6 +20,7 @@ export class UsersService {
   ) {}
 
   async findById(userId: string): Promise<User> {
+    console.log('Finding user by ID:', userId); // Debug log
     const user = await this.userModel
       .findById(userId)
       .select('-password -refreshTokens');

@@ -1,12 +1,13 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
-import { Role, RoleDocument } from './role.schema';
 
 export type UserDocument = User & Document;
 
 @Schema({ timestamps: true, collection: 'users' })
 export class User {
-  // 🔑 TenantId (bắt buộc)
+  @Prop({ required: true, unique: true })
+  userId: string; // VD: USR00001
+
   @Prop({ type: Types.ObjectId, ref: 'Tenant', required: true, index: true })
   tenantId: Types.ObjectId;
 
@@ -27,3 +28,24 @@ export class User {
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
+
+// ✅ Tự động generate userId = USR00001, USR00002, ...
+UserSchema.pre<UserDocument>('save', async function (next) {
+  if (!this.userId) {
+    const lastUser = await this.collection
+      .find({})
+      .sort({ userId: -1 })
+      .limit(1)
+      .toArray();
+
+    let nextNumber = 1;
+    if (lastUser.length > 0) {
+      const lastId = lastUser[0].userId; // VD: USR00005
+      const num = parseInt(lastId.replace('USR', ''), 10);
+      nextNumber = num + 1;
+    }
+
+    this.userId = `USR${nextNumber.toString().padStart(5, '0')}`;
+  }
+  next();
+});

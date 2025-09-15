@@ -13,6 +13,7 @@ import { CloudinaryModule } from './cloudinary/cloudinary.module';
 import { MailModule } from './modules/mail/mail.module';
 import { ResourceModule } from './modules/resource/resource.module';
 import { CustomerModule } from './modules/customer/customer.module';
+import { EmployeesModule } from './modules/employees/employees.module';
 
 @Module({
   imports: [
@@ -25,7 +26,7 @@ import { CustomerModule } from './modules/customer/customer.module';
       useFactory: (configService: ConfigService) => {
         const uri = configService.get<string>('database.uri');
         const dbName = configService.get<string>('database.name');
-        console.log('Connecting to MongoDB:', uri);
+        console.log(`Connecting to MongoDB: ${uri}/${dbName}`);
         return { uri, dbName };
       },
     }),
@@ -35,9 +36,10 @@ import { CustomerModule } from './modules/customer/customer.module';
     UsersModule,
     MailModule,
     ResourceModule,
-    CustomerModule
+    CustomerModule,
+    EmployeesModule,
   ],
   controllers: [TestController],
   providers: [DatabaseService],
 })
-export class AppModule { }
+export class AppModule {}

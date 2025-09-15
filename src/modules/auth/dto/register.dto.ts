@@ -2,20 +2,32 @@ import { ApiProperty } from '@nestjs/swagger';
 import { IsEmail, IsMongoId, IsString, MinLength } from 'class-validator';
 
 export class RegisterDto {
-  @ApiProperty({ example: '64f94d5e8b7b9c7f12345678' })
+  @ApiProperty({
+    description: 'ID của tenant mà user thuộc về',
+    example: '64f2b1c1234abcdef5678901',
+  })
   @IsMongoId()
   tenantId: string;
 
-  @ApiProperty({ example: 'user@example.com' })
+  @ApiProperty({
+    description: 'Email của user',
+    example: 'user@example.com',
+  })
   @IsEmail()
   email: string;
 
-  @ApiProperty({ example: '123456' })
+  @ApiProperty({
+    description: 'Mật khẩu của user, tối thiểu 6 ký tự',
+    example: '123456',
+  })
   @IsString()
   @MinLength(6)
   password: string;
 
-  @ApiProperty({ example: 'John Doe' })
+  @ApiProperty({
+    description: 'Tên đầy đủ của user',
+    example: 'Nguyễn Văn A',
+  })
   @IsString()
   name: string;
 }
