@@ -17,7 +17,7 @@ export class Customer {
     @Prop({ type: Types.ObjectId, ref: 'User', required: true })
     owner: Types.ObjectId;
 
-    @Prop({ type: String, unique: true, index: true })
+    @Prop({ type: String, index: true })
     citizenId: string; // CCCD
 
     @Prop({ type: String })
