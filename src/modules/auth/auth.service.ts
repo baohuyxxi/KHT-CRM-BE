@@ -109,7 +109,8 @@ export class AuthService {
         },
       };
     } catch (error) {
-      throw new UnauthorizedException('Lỗi xác thực');
+      console.error('Login error:', error);
+      throw new UnauthorizedException(error.message || 'Lỗi xác thực');
     }
   }
 

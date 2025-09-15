@@ -4,20 +4,20 @@ import { ConfigService } from '@nestjs/config';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ResponseInterceptor } from './common/interceptors/response.interceptor';
 import { AllExceptionsFilter } from './common/filters/all-exceptions.filter';
+declare const module: any;
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const configService = app.get(ConfigService);
 
   const port = parseInt(process.env.APP_PORT || '3000', 10);
-  const host = '0.0.0.0'; // cần expose port trên Fly.io
+  const host = '0.0.0.0';
 
   app.setGlobalPrefix('api/v1');
   app.enableCors();
   app.useGlobalInterceptors(new ResponseInterceptor());
   app.useGlobalFilters(new AllExceptionsFilter());
 
-  // Swagger chỉ dev
   if (process.env.NODE_ENV === 'development') {
     const config = new DocumentBuilder()
       .setTitle('CRM API')
@@ -32,5 +32,11 @@ async function bootstrap() {
 
   console.log(`🚀 Server running on ${host}:${port}`);
   await app.listen(port, host);
+
+  // 🔥 HMR
+  if (module.hot) {
+    module.hot.accept();
+    module.hot.dispose(() => app.close());
+  }
 }
 bootstrap();

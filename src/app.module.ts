@@ -24,7 +24,7 @@ import { ResourceModule } from './modules/resource/resource.module';
       useFactory: (configService: ConfigService) => {
         const uri = configService.get<string>('database.uri');
         const dbName = configService.get<string>('database.name');
-        console.log('Connecting to MongoDB:', uri);
+        console.log(`Connecting to MongoDB: ${uri}/${dbName}`);
         return { uri, dbName };
       },
     }),
