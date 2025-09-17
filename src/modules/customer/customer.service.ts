@@ -1,4 +1,4 @@
-import { ConflictException, Injectable } from "@nestjs/common";
+import { ConflictException, Injectable, NotFoundException } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Counter, Customer, CustomerDocument } from "./schemas/customer.schema";
 import { Model } from "mongoose";
@@ -37,8 +37,17 @@ export class CustomerService {
         }
     }
 
-    async findAllByUserId(userId): Promise<Customer[]> {
-        console.log('Decoded userId from token:', userId);
+    async updateCustomer(id: string, data: Partial<CreateCustomerDto>): Promise<Customer | null> {
+        const updated = await this.customerModel
+            .findOneAndUpdate({ cusId: id }, data, { new: true })
+            .exec();
+        if (!updated) {
+            throw new NotFoundException(`Customer with id ${id} not found or you do not have permission to update it.`);
+        }
+        return updated;
+    }
+
+    async findAllByUserId(userId: string): Promise<Customer[]> {
         return this.customerModel.find({ owner: userId }).exec();
     }
 

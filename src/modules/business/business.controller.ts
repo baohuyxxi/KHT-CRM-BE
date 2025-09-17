@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, UseGuards } from "@nestjs/common";
+import { Body, Controller, Get, Param, Post, Req, UseGuards } from "@nestjs/common";
 import { ApiTags } from "@nestjs/swagger";
 import { BusinessService } from "./business.service";
 import { CreateBusinessDto } from "./dto/business.dto";
@@ -7,6 +7,7 @@ import { Permission } from "../auth/permissions.enum";
 import { Permissions } from "../auth/decorators/permissions.decorator";
 import { PermissionsGuard } from "../auth/guards/permissions.guard";
 import { JwtAuthGuard } from "../auth/jwt-auth.guard";
+import express from 'express';
 
 
 @ApiTags('Businesses')
@@ -25,7 +26,15 @@ export class BusinessController {
     @Get(":id")
     @UseGuards(JwtAuthGuard, PermissionsGuard)
     @Permissions(Permission.USER_READ_ANY)
-    async findAllByUserId(@Param('id') userId: string): Promise<Business[]> {
-        return this.businessService.findAllByUserId(userId);
+    async findOneBybusId(@Param('id') busId: string): Promise<Business | null> {
+        return this.businessService.findOneBybusId(busId);
+    }
+
+    @Get()
+    @UseGuards(JwtAuthGuard, PermissionsGuard)
+    @Permissions(Permission.USER_READ_ANY)
+    async findAllOfOwner(@Req() req: express.Request): Promise<Business[]> {
+        const user = req.user as { userId: string; roles: string[] };
+        return this.businessService.findAllOfOwner(user.userId);
     }
 }

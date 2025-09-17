@@ -59,7 +59,7 @@ export class Business {
 }
 
 export const BusinessSchema = SchemaFactory.createForClass(Business);
-BusinessSchema.virtual('customer', {
+BusinessSchema.virtual('cusInfo', {
     ref: 'Customer',          // model Customer
     localField: 'cusId', // field trong Business
     foreignField: 'cusId',    // field Customer để match
@@ -69,7 +69,7 @@ BusinessSchema.virtual('customer', {
 BusinessSchema.set('toObject', { virtuals: true });
 BusinessSchema.set('toJSON', { virtuals: true });
 
-BusinessSchema.virtual('user', {
+BusinessSchema.virtual('ownerInfo', {
     ref: 'User',              // model User
     localField: 'owner',      // field trong Business
     foreignField: 'userId',      // field User để match

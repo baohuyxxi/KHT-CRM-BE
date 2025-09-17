@@ -37,7 +37,17 @@ export class BusinessService {
         }
     }
 
-    async findAllByUserId(userId): Promise<Business[]> {
-        return this.businessModel.find({ _id: userId }).populate('customer').populate('user').exec();
+    async findOneBybusId(busId: string): Promise<Business | null> {
+        return this.businessModel.findOne({ busId }).populate('cusInfo').populate({
+            path: 'ownerInfo',
+            select: 'userId name email', // chỉ lấy các field cần
+        }).exec();
+    }
+
+    async findAllOfOwner(userId: string): Promise<Business[]> {
+        return this.businessModel.find({ owner: 'USR00001' }).populate('cusInfo').populate({ //sửa userId lại
+            path: 'ownerInfo',
+            select: 'userId name email', // chỉ lấy các field cần
+        }).exec();
     }
 }
