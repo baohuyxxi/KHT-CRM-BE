@@ -13,7 +13,9 @@ import { CloudinaryModule } from './cloudinary/cloudinary.module';
 import { MailModule } from './modules/mail/mail.module';
 import { ResourceModule } from './modules/resource/resource.module';
 import { CustomerModule } from './modules/customer/customer.module';
+import { BusinessModule } from './modules/business/business.module';
 import { EmployeesModule } from './modules/employees/employees.module';
+
 
 @Module({
   imports: [
@@ -37,9 +39,11 @@ import { EmployeesModule } from './modules/employees/employees.module';
     MailModule,
     ResourceModule,
     CustomerModule,
+    BusinessModule,
     EmployeesModule,
+
   ],
   controllers: [TestController],
   providers: [DatabaseService],
 })
-export class AppModule {}
+export class AppModule { }
