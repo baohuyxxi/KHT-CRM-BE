@@ -29,7 +29,7 @@ export class AuthService {
     @InjectModel(Role.name) private roleModel: Model<RoleDocument>,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
-  ) {}
+  ) { }
 
   async register(dto: RegisterDto) {
     const tenantId = new Types.ObjectId(dto.tenantId);
@@ -81,10 +81,9 @@ export class AuthService {
       if (!isMatch) throw new UnauthorizedException('Mật khẩu không đúng');
 
       const userWithRole = await this.userModel
-        .findById(user.userId)
+        .findOne({ userId: user.userId })
         .populate<{ role: RoleDocument }>('role')
         .exec();
-
       if (!userWithRole)
         throw new UnauthorizedException('Không tìm thấy vai trò');
 

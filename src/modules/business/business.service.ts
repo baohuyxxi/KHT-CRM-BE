@@ -45,7 +45,7 @@ export class BusinessService {
     }
 
     async findAllOfOwner(userId: string): Promise<Business[]> {
-        return this.businessModel.find({ owner: 'USR00001' }).populate('cusInfo').populate({ //sửa userId lại
+        return this.businessModel.find({ owner: userId }).populate('cusInfo').populate({ //sửa userId lại
             path: 'ownerInfo',
             select: 'userId name email', // chỉ lấy các field cần
         }).exec();
