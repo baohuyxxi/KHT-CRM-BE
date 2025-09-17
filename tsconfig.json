@@ -22,5 +22,6 @@
     "strictBindCallApply": false,
     "noFallthroughCasesInSwitch": false,
     "tsBuildInfoFile": "./node_modules/.cache/tsbuildinfo"
-  }
+  },
+  "exclude": ["dist", "node_modules"]
 }
