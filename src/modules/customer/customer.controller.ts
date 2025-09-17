@@ -21,13 +21,23 @@ import express from 'express';
 @ApiTags('Customers')
 @Controller('customers')
 export class CustomerController {
-  constructor(private readonly customerService: CustomerService) {}
+  constructor(private readonly customerService: CustomerService) { }
 
   @Post('add')
   @UseGuards(JwtAuthGuard, PermissionsGuard)
   @Permissions(Permission.USER_CREATE_ANY)
   async addCustomer(@Body() body: CreateCustomerDto) {
     return await this.customerService.createCustomer(body);
+  }
+
+  @Put('update/:id')
+  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @Permissions(Permission.USER_UPDATE_ANY)
+  async updateCustomer(
+    @Param('id') id: string,
+    @Body() body: Partial<CreateCustomerDto>,
+  ) {
+    return await this.customerService.updateCustomer(id, body);
   }
 
   //Get all customers of a user

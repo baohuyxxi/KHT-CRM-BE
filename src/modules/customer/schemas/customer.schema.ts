@@ -50,6 +50,15 @@ export class Customer {
 
 export const CustomerSchema = SchemaFactory.createForClass(Customer);
 
+CustomerSchema.virtual('businesses', {
+    ref: 'Business',           // model Business
+    localField: 'cusId',       // field Customer
+    foreignField: 'cusId', // field trong Business
+    justOne: false,            // nhiều business
+});
+CustomerSchema.set('toObject', { virtuals: true });
+CustomerSchema.set('toJSON', { virtuals: true });
+
 @Schema({ collection: 'counters' })
 export class Counter {
   @Prop({ type: String, required: true })
