@@ -81,7 +81,7 @@ export class AuthService {
       if (!isMatch) throw new UnauthorizedException('Mật khẩu không đúng');
 
       const userWithRole = await this.userModel
-        .findById(user._id)
+        .findById(user.userId)
         .populate<{ role: RoleDocument }>('role')
         .exec();
 
@@ -91,7 +91,7 @@ export class AuthService {
       const permissions = userWithRole.role?.permissions || [];
 
       const payload = {
-        userId: user._id,
+        userId: user.userId,
         tenantId: user.tenantId,
         role: userWithRole.role?.name,
         permissions,
@@ -107,7 +107,7 @@ export class AuthService {
 
       const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 7 ngày
       await this.refreshTokenModel.create({
-        userId: user._id,
+        userId: user.userId,
         token: refreshToken,
         expiresAt,
       });

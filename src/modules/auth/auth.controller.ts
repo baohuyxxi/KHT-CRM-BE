@@ -35,7 +35,7 @@ export class AuthController {
     const token = await this.authService.login(loginDto);
     return {
       data: token,
-      message: 'Login successful', // 👈 thêm message ở đây
+      message: 'Đăng nhập thành công', // 👈 thêm message ở đây
     };
   }
 
