@@ -13,6 +13,7 @@ import { CloudinaryModule } from './cloudinary/cloudinary.module';
 import { MailModule } from './modules/mail/mail.module';
 import { ResourceModule } from './modules/resource/resource.module';
 import { CustomerModule } from './modules/customer/customer.module';
+import { BusinessModule } from './modules/business/business.module';
 
 @Module({
   imports: [
@@ -35,7 +36,8 @@ import { CustomerModule } from './modules/customer/customer.module';
     UsersModule,
     MailModule,
     ResourceModule,
-    CustomerModule
+    CustomerModule,
+    BusinessModule
   ],
   controllers: [TestController],
   providers: [DatabaseService],
