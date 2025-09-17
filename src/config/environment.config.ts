@@ -2,7 +2,7 @@ import { registerAs } from '@nestjs/config';
 
 export default registerAs('app', () => ({
   MONGODB_URI: process.env.MONGODB_URI || 'mongodb://localhost:27017',
-  DATABASE_NAME: process.env.DATABASE_NAME || 'crmDB',
+  DATABASE_NAME: process.env.DATABASE_NAME || 'CRM-KimHongThinh',
   APP_HOST: process.env.APP_HOST || 'localhost',
   APP_PORT: parseInt(process.env.APP_PORT || '3000', 10),
   CLOUD_NAME: process.env.CLOUD_NAME,

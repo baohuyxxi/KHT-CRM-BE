@@ -14,6 +14,8 @@ import { MailModule } from './modules/mail/mail.module';
 import { ResourceModule } from './modules/resource/resource.module';
 import { CustomerModule } from './modules/customer/customer.module';
 import { BusinessModule } from './modules/business/business.module';
+import { EmployeesModule } from './modules/employees/employees.module';
+
 
 @Module({
   imports: [
@@ -26,7 +28,7 @@ import { BusinessModule } from './modules/business/business.module';
       useFactory: (configService: ConfigService) => {
         const uri = configService.get<string>('database.uri');
         const dbName = configService.get<string>('database.name');
-        console.log('Connecting to MongoDB:', uri);
+        console.log(`Connecting to MongoDB: ${uri}/${dbName}`);
         return { uri, dbName };
       },
     }),
@@ -37,7 +39,9 @@ import { BusinessModule } from './modules/business/business.module';
     MailModule,
     ResourceModule,
     CustomerModule,
-    BusinessModule
+    BusinessModule,
+    EmployeesModule,
+
   ],
   controllers: [TestController],
   providers: [DatabaseService],
