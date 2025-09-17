@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
+import * as bcrypt from 'bcrypt';
 
 export type UserDocument = User & Document;
 
@@ -29,7 +30,9 @@ export class User {
 
 export const UserSchema = SchemaFactory.createForClass(User);
 
-// ✅ Tự động generate userId = USR00001, USR00002, ...
+/**
+ * Hook generate userId tự động
+ */
 UserSchema.pre<UserDocument>('save', async function (next) {
   if (!this.userId) {
     const lastUser = await this.collection
@@ -46,6 +49,16 @@ UserSchema.pre<UserDocument>('save', async function (next) {
     }
 
     this.userId = `USR${nextNumber.toString().padStart(5, '0')}`;
+  }
+  next();
+});
+
+/**
+ * Hook hash password tự động
+ */
+UserSchema.pre<UserDocument>('save', async function (next) {
+  if (this.isModified('password')) {
+    this.password = await bcrypt.hash(this.password, 10);
   }
   next();
 });
