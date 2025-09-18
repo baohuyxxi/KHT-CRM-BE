@@ -12,4 +12,8 @@ export class UploadFileDto {
     @IsOptional()
     @IsString()
     folder?: string;
+
+    @IsOptional()
+    @IsString()
+    fileName?: string;  // 👈 tên file khi upload lên Cloudinary
 }
