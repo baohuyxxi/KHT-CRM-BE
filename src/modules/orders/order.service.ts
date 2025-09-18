@@ -2,7 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Order, OrderDocument, Counter } from './schemas/order.schema';
-import { CreateOrderDto } from './dto/create-order.dto';
+import { CreateOrderDto } from './dto/order.dto';
 
 @Injectable()
 export class OrderService {
@@ -22,8 +22,8 @@ export class OrderService {
                 { new: true, upsert: true, session },
             );
 
-            const orderId = 'ORD' + counter.seq.toString().padStart(7, '0');
-            const newOrder = new this.orderModel({ ...data, orderId });
+            const ordId = 'DH' + counter.seq.toString().padStart(7, '0');
+            const newOrder = new this.orderModel({ ...data, ordId });
 
             await newOrder.save({ session });
             await session.commitTransaction();
@@ -56,10 +56,12 @@ export class OrderService {
     async findAllByUserId(userId: string): Promise<Order[]> {
         return this.orderModel
             .find({ owner: userId })
-            .populate([
-                { path: 'customer', select: 'cusId cusName citizenId' },
-                { path: 'business', select: 'busId name taxId' },
-            ])
+            .exec();
+    }
+
+    async findAll(): Promise<Order[]> {
+        return this.orderModel
+            .find()
             .exec();
     }
 

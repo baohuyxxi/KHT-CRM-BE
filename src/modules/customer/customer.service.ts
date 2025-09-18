@@ -48,7 +48,7 @@ export class CustomerService {
     }
 
     async findAllByUserId(userId: string): Promise<Customer[]> {
-        return this.customerModel.find({ owner: userId }).populate({ path: 'businesses', select: 'busId name' }).exec();
+        return this.customerModel.find({ owner: userId }).populate('businesses').exec();
     }
 
     async findById(id: string): Promise<Customer | null> {

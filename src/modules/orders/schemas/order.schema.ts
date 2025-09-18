@@ -6,7 +6,7 @@ export type OrderDocument = Order & Document;
 @Schema({ timestamps: true, collection: 'orders' })
 export class Order {
     @Prop({ type: String, unique: true })
-    orderId: string; // Mã đơn hàng (ORD0000001)
+    ordId: string; // Mã đơn hàng (ORD0000001)
 
     @Prop({ type: String, enum: ['SP', 'DV'], required: true })
     type: string; // Loại: SP (sản phẩm), DV (dịch vụ)
@@ -42,10 +42,10 @@ export class Order {
     guarantee?: string; // Thời gian bảo hành (ví dụ: 12 tháng)
 
     @Prop({ type: Date })
-    expire?: Date; // Ngày hết hạn bảo hành
+    expire?: Date; //số tháng của sản phẩm
 
     @Prop({ type: Date })
-    expectedEnd?: Date; // Dự kiến kết thúc
+    expectedEnd?: Date; // Dự kiến kết thúc sản phẩm
 
     @Prop({ type: Number })
     price?: number; // Giá trị hợp đồng
@@ -81,7 +81,7 @@ export const CounterSchema = SchemaFactory.createForClass(Counter);
 //
 OrderSchema.post<OrderDocument>('save', async function (doc, next) {
     try {
-        if (doc.isNew && !doc.orderId) {
+        if (doc.isNew && !doc.ordId) {
             const counterModel = this.db.model<Counter & Document>('Counter');
             const counter = await counterModel.findByIdAndUpdate(
                 { _id: 'orders' },
@@ -90,8 +90,8 @@ OrderSchema.post<OrderDocument>('save', async function (doc, next) {
             );
 
             const seqNumber = counter.seq;
-            doc.orderId = 'DH' + seqNumber.toString().padStart(7, '0');
-            await doc.updateOne({ orderId: doc.orderId });
+            doc.ordId = 'DH' + seqNumber.toString().padStart(7, '0');
+            await doc.updateOne({ orderId: doc.ordId });
         }
         next();
     } catch (err) {
