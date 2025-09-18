@@ -24,7 +24,7 @@ export class EmployeesController {
   constructor(private readonly employeesService: EmployeesService) {}
 
   @Get()
-  @Permissions(Permission.USER_READ_ANY)
+  @Permissions(Permission.EMPLOYEE_READ_ANY)
   async findAll(@Request() req: any) {
     const tenantId = req.user.tenantId; // lấy từ token
     const query = { ...req.query, tenantId };
@@ -32,14 +32,14 @@ export class EmployeesController {
   }
 
   @Get(':id')
-  @Permissions(Permission.USER_READ_ANY)
+  @Permissions(Permission.EMPLOYEE_READ_ANY)
   // eslint-disable-next-line @typescript-eslint/require-await
   async findOne(@Param('id') id: string) {
     return this.employeesService.findOne(id);
   }
 
   @Put(':id')
-  @Permissions(Permission.USER_UPDATE_ANY)
+  @Permissions(Permission.EMPLOYEE_UPDATE_ANY)
   // eslint-disable-next-line @typescript-eslint/require-await
   async update(@Param('id') id: string, @Body() dto: UpdateEmployeeDto) {
     return this.employeesService.update(id, dto);
@@ -47,7 +47,7 @@ export class EmployeesController {
 
   // Lấy quyền hiện tại của user
   @Get(':id/permissions')
-  @Permissions(Permission.USER_READ_ANY)
+  @Permissions(Permission.EMPLOYEE_READ_ANY)
   async getPermissions(@Param('id') id: string) {
     const permissions = await this.employeesService.findById(id);
     if (!permissions) throw new NotFoundException('User not found');
@@ -57,9 +57,8 @@ export class EmployeesController {
     };
   }
 
-  // Cập nhật quyền cho user
   @Put(':id/permissions')
-  @Permissions(Permission.USER_UPDATE_ANY)
+  @Permissions(Permission.EMPLOYEE_UPDATE_ANY)
   async updatePermissions(
     @Param('id') id: string,
     @Body('permissions') permissions: string[],

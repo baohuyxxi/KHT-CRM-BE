@@ -20,10 +20,10 @@ export class UsersService {
   ) {}
 
   async findById(userId: string): Promise<User> {
-    console.log('Finding user by ID:', userId); // Debug log
     const user = await this.userModel
-      .findById(userId)
+      .findOne({ userId }) // ✅ tìm theo field userId, không phải _id
       .select('-password -refreshTokens');
+
     if (!user) throw new NotFoundException('User not found');
     return user;
   }

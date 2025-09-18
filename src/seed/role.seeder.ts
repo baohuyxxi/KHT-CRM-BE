@@ -1,38 +1,45 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-import { Role, RoleDocument } from '../modules/auth/schemas/role.schema';
-import { Permission } from '../modules/auth/permissions.enum';
+import { Model, Types } from 'mongoose';
+import { Role, RoleDocument } from 'src/modules/auth/schemas/role.schema';
 
 @Injectable()
 export class RoleSeeder {
   constructor(@InjectModel(Role.name) private roleModel: Model<RoleDocument>) {}
 
   async seed() {
-    const roles = [
-      {
-        name: 'admin',
-        permissions: Object.values(Permission), // full quyền
-      },
-      {
-        name: 'user',
+    // 🔹 check role admin đã có chưa
+    const exist = await this.roleModel.findOne({ roleName: 'admin' });
+    if (!exist) {
+      await this.roleModel.create({
+        roleName: 'admin',
         permissions: [
-          Permission.USER_READ_OWN,
-          Permission.USER_UPDATE_OWN,
-          Permission.CUSTOMER_READ_OWN,
-          Permission.CUSTOMER_UPDATE_OWN,
+          'user:read:any',
+          'user:create:any',
+          'user:read:own',
+          'user:update:any',
+          'user:update:own',
+          'customer:read:any',
+          'customer:read:own',
+          'customer:create',
+          'customer:update:any',
+          'customer:update:own',
+          'customer:delete:any',
+          'customer:delete:own',
+          'task:read:any',
+          'task:read:own',
+          'task:create',
+          'task:update:any',
+          'task:update:own',
+          'task:delete:any',
+          'task:delete:own',
         ],
-      },
-    ];
+        tenantId: new Types.ObjectId('68b4124594d64e168a40fc99'), // 🔹 gắn tenant mặc định
+      });
 
-    for (const role of roles) {
-      const exist = await this.roleModel.findOne({ name: role.name });
-      if (!exist) {
-        await this.roleModel.create(role);
-        console.log(`Created role: ${role.name}`);
-      } else {
-        console.log(`Role ${role.name} already exists`);
-      }
+      console.log('✅ Created admin role');
+    } else {
+      console.log('ℹ️ Admin role already exists');
     }
   }
 }

@@ -6,7 +6,7 @@ export type UserDocument = User & Document;
 
 @Schema({ timestamps: true, collection: 'users' })
 export class User {
-  @Prop({ required: true, unique: true })
+  @Prop({ unique: true, index: true }) // ❌ Không required, chỉ unique
   userId: string; // VD: USR00001
 
   @Prop({ type: Types.ObjectId, ref: 'Tenant', required: true, index: true })
@@ -29,11 +29,8 @@ export class User {
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
-
-/**
- * Hook generate userId tự động
- */
 UserSchema.pre<UserDocument>('save', async function (next) {
+  // Tự động sinh userId
   if (!this.userId) {
     const lastUser = await this.collection
       .find({})
@@ -47,18 +44,13 @@ UserSchema.pre<UserDocument>('save', async function (next) {
       const num = parseInt(lastId.replace('USR', ''), 10);
       nextNumber = num + 1;
     }
-
     this.userId = `USR${nextNumber.toString().padStart(5, '0')}`;
   }
-  next();
-});
 
-/**
- * Hook hash password tự động
- */
-UserSchema.pre<UserDocument>('save', async function (next) {
+  // Hash password nếu thay đổi
   if (this.isModified('password')) {
     this.password = await bcrypt.hash(this.password, 10);
   }
+
   next();
 });
