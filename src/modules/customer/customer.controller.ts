@@ -21,18 +21,18 @@ import express from 'express';
 @ApiTags('Customers')
 @Controller('customers')
 export class CustomerController {
-  constructor(private readonly customerService: CustomerService) { }
+  constructor(private readonly customerService: CustomerService) {}
 
   @Post('add')
   @UseGuards(JwtAuthGuard, PermissionsGuard)
-  @Permissions(Permission.USER_CREATE_ANY)
+  @Permissions(Permission.CUSTOMER_CREATE)
   async addCustomer(@Body() body: CreateCustomerDto) {
     return await this.customerService.createCustomer(body);
   }
 
   @Put('update/:id')
   @UseGuards(JwtAuthGuard, PermissionsGuard)
-  @Permissions(Permission.USER_UPDATE_ANY)
+  @Permissions(Permission.CUSTOMER_UPDATE_ANY)
   async updateCustomer(
     @Param('id') id: string,
     @Body() body: Partial<CreateCustomerDto>,
@@ -43,7 +43,7 @@ export class CustomerController {
   //Get all customers of a user
   @Get()
   @UseGuards(JwtAuthGuard, PermissionsGuard)
-  @Permissions(Permission.USER_READ_ANY)
+  @Permissions(Permission.CUSTOMER_READ_ANY)
   async getAllCustomers(@Req() req: express.Request) {
     const user = req.user as { userId: string; roles: string[] };
     return await this.customerService.findAllByUserId(user.userId);
@@ -51,7 +51,7 @@ export class CustomerController {
 
   @Get('/:id')
   @UseGuards(JwtAuthGuard, PermissionsGuard)
-  @Permissions(Permission.USER_READ_ANY)
+  @Permissions(Permission.CUSTOMER_READ_ANY)
   async getCustomerById(@Param('id') id: string) {
     return await this.customerService.findById(id);
   }

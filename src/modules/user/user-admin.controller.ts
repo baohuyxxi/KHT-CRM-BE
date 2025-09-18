@@ -24,25 +24,20 @@ export class UserAdminController {
   constructor(private readonly usersService: UsersService) {}
 
   @Get()
-  @RequirePermissions(Permission.USER_READ_ANY)
   async getAllUsers() {
     return this.usersService.findAll();
   }
 
   @Get(':id')
-  @RequirePermissions(Permission.USER_READ_ANY)
   async getUser(@Param('id') id: string) {
     return this.usersService.findById(id);
   }
 
-  @Patch(':id')
-  @RequirePermissions(Permission.USER_UPDATE_ANY)
   async updateUser(@Param('id') id: string, @Body() dto: UpdateUserDto) {
     return this.usersService.updateUser(id, dto);
   }
 
   @Delete(':id')
-  @RequirePermissions(Permission.USER_UPDATE_ANY) // hoặc Permission.USER_DELETE_ANY nếu bạn muốn chi tiết hơn
   async deleteUser(@Param('id') id: string) {
     return this.usersService.deleteUser(id);
   }
