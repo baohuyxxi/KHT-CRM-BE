@@ -88,7 +88,6 @@ export class AuthService {
       const payload = {
         userId: user.userId,
         tenantId: user.tenantId,
-        role: userWithRole.role?.roleName,
         permissions,
       };
 
@@ -145,11 +144,19 @@ export class AuthService {
           'Refresh token không tồn tại hoặc đã hết hạn',
         );
 
+      const userWithRole = await this.userModel
+        .findOne({ userId: payload.userId })
+        .populate<{ role: RoleDocument }>('role')
+        .exec();
+      if (!userWithRole)
+        throw new UnauthorizedException('Không tìm thấy vai trò');
+
+      const permissions = userWithRole.role?.permissions || [];
       const newAccessToken = jwt.sign(
         {
           userId: payload.userId,
           tenantId: payload.tenantId,
-          role: payload.role,
+          permissions,
         },
         secret,
         { expiresIn: '1d' },
