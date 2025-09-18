@@ -9,6 +9,7 @@ import { User, UserSchema } from 'src/modules/auth/schemas/user.schema';
 
 import { RoleSeeder } from './role.seeder';
 import { UserSeeder } from './user.seeder';
+import { UpdateRoles } from './seed-roles';
 
 @Module({
   imports: [
@@ -25,7 +26,7 @@ import { UserSeeder } from './user.seeder';
       { name: User.name, schema: UserSchema },
     ]),
   ],
-  providers: [RoleSeeder, UserSeeder],
-  exports: [RoleSeeder, UserSeeder],
+  providers: [RoleSeeder, UserSeeder, UpdateRoles],
+  exports: [RoleSeeder, UserSeeder, UpdateRoles],
 })
 export class SeedModule {}

@@ -19,6 +19,9 @@ import {
 } from './schemas/refresh-token.schema';
 import { DeleteResult } from 'mongodb';
 import { RoleDocument, Role } from './schemas/role.schema';
+import { DefaultRoles } from './constants/roles.constant';
+import { Permission } from '../auth/permissions.enum';
+import { ForbiddenException } from '@nestjs/common';
 
 @Injectable()
 export class AuthService {
@@ -29,7 +32,7 @@ export class AuthService {
     @InjectModel(Role.name) private roleModel: Model<RoleDocument>,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
-  ) { }
+  ) {}
 
   async register(dto: RegisterDto) {
     const tenantId = new Types.ObjectId(dto.tenantId);
@@ -37,32 +40,20 @@ export class AuthService {
     const exist = await this.userModel.findOne({ email: dto.email, tenantId });
     if (exist) throw new ConflictException('Người dùng đã tồn tại');
 
-    // Lấy role mặc định
-    const defaultRole = await this.roleModel.findOne({ name: 'user' });
-    if (!defaultRole)
-      throw new InternalServerErrorException('Không tìm thấy vai trò mặc định');
-
-    // Tạo userId tự động
-    const lastUser = await this.userModel
-      .find({})
-      .sort({ userId: -1 })
-      .limit(1);
-    let nextNumber = 1;
-    if (lastUser.length > 0) {
-      nextNumber = parseInt(lastUser[0].userId.replace('USR', '')) + 1;
-    }
-    const userId = `USR${nextNumber.toString().padStart(5, '0')}`;
-
-    const hashed = await bcrypt.hash(dto.password, 10);
+    const defaultRole = DefaultRoles.user;
+    const userRole = await this.roleModel.create({
+      roleName: defaultRole.name,
+      permissions: defaultRole.permissions,
+      tenantId,
+    });
 
     const user = new this.userModel({
       tenantId,
       email: dto.email,
-      password: hashed,
+      password: dto.password,
       name: dto.name,
-      role: defaultRole._id,
+      role: userRole._id,
       isActive: true,
-      userId, // ✅ chắc chắn có giá trị
       permissions: [],
     });
 
@@ -89,10 +80,15 @@ export class AuthService {
 
       const permissions = userWithRole.role?.permissions || [];
 
+      // ✅ Check quyền đăng nhập
+      if (!permissions.includes(Permission.AUTH_LOGIN)) {
+        throw new ForbiddenException('Bạn không có quyền đăng nhập');
+      }
+
       const payload = {
         userId: user.userId,
         tenantId: user.tenantId,
-        role: userWithRole.role?.name,
+        role: userWithRole.role?.roleName,
         permissions,
       };
 
@@ -100,25 +96,23 @@ export class AuthService {
       if (!secret)
         throw new UnauthorizedException('JWT_Secret không được định nghĩa');
 
-      // Generate tokens
       const accessToken = jwt.sign(payload, secret, { expiresIn: '1d' });
       const refreshToken = jwt.sign(payload, secret, { expiresIn: '7d' });
 
-      const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 7 ngày
+      const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
       await this.refreshTokenModel.create({
         userId: user.userId,
         token: refreshToken,
         expiresAt,
       });
 
-      // Trả về user an toàn + role name
       const { password: _, role, ...safeUser } = user.toObject();
       return {
         accessToken,
         refreshToken,
         user: {
           ...safeUser,
-          role: userWithRole.role?.name,
+          role: userWithRole.role?.roleName,
           permissions,
         },
       };

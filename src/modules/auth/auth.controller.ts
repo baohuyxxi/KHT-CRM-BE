@@ -16,10 +16,11 @@ export class AuthController {
 
   @Post('register')
   @UseGuards(JwtAuthGuard, PermissionsGuard)
-  @Permissions(Permission.USER_CREATE_ANY) // chỉ ai có quyền này mới tạo được
+  @Permissions(Permission.EMPLOYEE_CREATE) // chỉ ai có quyền này mới tạo được
   @ApiOperation({ summary: 'Register a new user under a tenant' })
   @ApiResponse({ status: 200, description: 'User registered successfully' })
-  async register(@Body() dto: RegisterDto) {
+  async register(@Body() dto: RegisterDto, @Request() req: any) {
+    dto.tenantId = req.user.tenantId;
     const user = await this.authService.register(dto);
     return {
       data: user,

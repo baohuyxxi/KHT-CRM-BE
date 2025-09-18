@@ -1,13 +1,17 @@
-// Định nghĩa permission chung cho toàn hệ thống (module-level PBAC)
+// src/modules/auth/permissions.enum.ts
 export enum Permission {
-  // User module
-  USER_CREATE_ANY = 'user:create:any',
-  USER_READ_ANY = 'user:read:any',
-  USER_READ_OWN = 'user:read:own',
-  USER_UPDATE_ANY = 'user:update:any',
-  USER_UPDATE_OWN = 'user:update:own',
+  // Auth
+  AUTH_LOGIN = 'auth:login',
 
-  // Customer module
+  // Employee (nhân sự)
+  EMPLOYEE_READ_ANY = 'employee:read:any',
+  EMPLOYEE_READ_OWN = 'employee:read:own',
+  EMPLOYEE_CREATE = 'employee:create:any',
+  EMPLOYEE_UPDATE_ANY = 'employee:update:any',
+  EMPLOYEE_UPDATE_OWN = 'employee:update:own',
+  EMPLOYEE_ROLE = 'employee:role',
+
+  // Customer
   CUSTOMER_READ_ANY = 'customer:read:any',
   CUSTOMER_READ_OWN = 'customer:read:own',
   CUSTOMER_CREATE = 'customer:create',
@@ -16,7 +20,25 @@ export enum Permission {
   CUSTOMER_DELETE_ANY = 'customer:delete:any',
   CUSTOMER_DELETE_OWN = 'customer:delete:own',
 
-  // Task module (ví dụ thêm)
+  // Business
+  BUSINESS_READ_ANY = 'business:read:any',
+  BUSINESS_READ_OWN = 'business:read:own',
+  BUSINESS_CREATE = 'business:create',
+  BUSINESS_UPDATE_ANY = 'business:update:any',
+  BUSINESS_UPDATE_OWN = 'business:update:own',
+  BUSINESS_DELETE_ANY = 'business:delete:any',
+  BUSINESS_DELETE_OWN = 'business:delete:own',
+
+  // Order
+  ORDER_READ_ANY = 'order:read:any',
+  ORDER_READ_OWN = 'order:read:own',
+  ORDER_CREATE = 'order:create',
+  ORDER_UPDATE_ANY = 'order:update:any',
+  ORDER_UPDATE_OWN = 'order:update:own',
+  ORDER_DELETE_ANY = 'order:delete:any',
+  ORDER_DELETE_OWN = 'order:delete:own',
+
+  // Task
   TASK_READ_ANY = 'task:read:any',
   TASK_READ_OWN = 'task:read:own',
   TASK_CREATE = 'task:create',
