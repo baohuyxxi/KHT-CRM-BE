@@ -59,3 +59,45 @@ export class CloudinaryController {
     }
 
 }
+
+@Controller('pdf')
+export class PdfController {
+    constructor(private readonly cloudinaryService: CloudinaryService) { }
+
+    @Post('upload')
+    @UseInterceptors(FileInterceptor('file', {
+        storage: memoryStorage(),
+    }))
+    async uploadFile(
+        @UploadedFile() file: Express.Multer.File,
+        @Body() uploadFileDto: any,
+    ) {
+        if (!file || !file.buffer) {
+            throw new BadRequestException('File not found or buffer is missing');
+        }
+
+        try {
+            return await this.cloudinaryService.uploadPDF(file, uploadFileDto);
+        } catch (err) {
+            throw new InternalServerErrorException(err.message || 'Upload failed');
+        }
+    }
+
+    // Upload nhiều file PDF
+    @Post('uploads')
+    @UseInterceptors(FilesInterceptor('files', 10, { storage: memoryStorage() }))
+    async uploadFiles(
+        @UploadedFiles() files: Express.Multer.File[],
+        @Body() uploadFileDto: any,
+    ) {
+        if (!files || files.length === 0 || !files[0].buffer) {
+            throw new BadRequestException('Files not found or buffer is missing');
+        }
+
+        try {
+            return await this.cloudinaryService.uploadPDFs(files, uploadFileDto);
+        } catch (err) {
+            throw new InternalServerErrorException(err.message || 'Upload failed');
+        }
+    }
+}
