@@ -15,6 +15,7 @@ import { ResourceModule } from './modules/resource/resource.module';
 import { CustomerModule } from './modules/customer/customer.module';
 import { BusinessModule } from './modules/business/business.module';
 import { EmployeesModule } from './modules/employees/employees.module';
+import { OrderModule } from './modules/orders/order.module';
 
 
 @Module({
@@ -41,6 +42,7 @@ import { EmployeesModule } from './modules/employees/employees.module';
     CustomerModule,
     BusinessModule,
     EmployeesModule,
+    OrderModule
 
   ],
   controllers: [TestController],
