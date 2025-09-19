@@ -15,8 +15,8 @@ import { ResourceModule } from './modules/resource/resource.module';
 import { CustomerModule } from './modules/customer/customer.module';
 import { BusinessModule } from './modules/business/business.module';
 import { EmployeesModule } from './modules/employees/employees.module';
+import { TaskModule } from './modules/task/task.module';
 import { OrderModule } from './modules/orders/order.module';
-
 
 @Module({
   imports: [
@@ -42,10 +42,10 @@ import { OrderModule } from './modules/orders/order.module';
     CustomerModule,
     BusinessModule,
     EmployeesModule,
+    TaskModule,
     OrderModule
-
   ],
   controllers: [TestController],
   providers: [DatabaseService],
 })
-export class AppModule { }
+export class AppModule {}
