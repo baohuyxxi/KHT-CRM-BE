@@ -42,7 +42,7 @@ export class OrderService {
         data: Partial<CreateOrderDto>,
     ): Promise<Order | null> {
         const updated = await this.orderModel
-            .findOneAndUpdate({ orderId: id }, data, { new: true })
+            .findOneAndUpdate({ ordId: id }, data, { new: true })
             .exec();
 
         if (!updated) {
@@ -68,11 +68,7 @@ export class OrderService {
     async findById(id: string): Promise<Order | null> {
         return (
             (await this.orderModel
-                .findOne({ orderId: id })
-                .populate([
-                    { path: 'customer', select: 'cusId cusName citizenId' },
-                    { path: 'business', select: 'busId name taxId' },
-                ])
+                .findOne({ ordId: id })
                 .exec()) || null
         );
     }
