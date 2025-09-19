@@ -48,6 +48,7 @@ export class CustomerService {
     }
 
     async findAllByUserId(userId: string): Promise<Customer[]> {
+        return this.customerModel.find().populate('businesses').exec();
         return this.customerModel.find({ owner: userId }).populate('businesses').exec();
     }
 

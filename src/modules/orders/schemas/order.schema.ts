@@ -8,6 +8,9 @@ export class Order {
     @Prop({ type: String, unique: true })
     ordId: string; // Mã đơn hàng (ORD0000001)
 
+    @Prop({ type: String, required: true, enum: ['Đấu mới', 'Gia hạn/Mua thêm'] })
+    reqType: string;
+
     @Prop({ type: String, enum: ['SP', 'DV'], required: true })
     type: string; // Loại: SP (sản phẩm), DV (dịch vụ)
 
@@ -41,8 +44,8 @@ export class Order {
     @Prop({ type: String })
     guarantee?: string; // Thời gian bảo hành (ví dụ: 12 tháng)
 
-    @Prop({ type: Date })
-    expire?: Date; //số tháng của sản phẩm
+    @Prop({ type: String })
+    expire?: string; //số tháng của sản phẩm
 
     @Prop({ type: Date })
     expectedEnd?: Date; // Dự kiến kết thúc sản phẩm
