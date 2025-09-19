@@ -37,6 +37,13 @@ export class BusinessService {
         }
     }
 
+    async updateBusiness(id: string, data: Partial<CreateBusinessDto>): Promise<Business | null> {
+        const updated = await this.businessModel
+            .findOneAndUpdate({ busId: id }, data, { new: true })
+            .exec();
+        return updated;
+    }
+
     async findOneBybusId(busId: string): Promise<Business | null> {
         return this.businessModel.findOne({ busId }).populate('cusInfo').populate({
             path: 'ownerInfo',
@@ -49,5 +56,23 @@ export class BusinessService {
             path: 'ownerInfo',
             select: 'userId name email', // chỉ lấy các field cần
         }).exec();
+    }
+
+    async deleteLinkedCustomerFromBusiness(busId: string): Promise<void> {
+        await this.businessModel.updateOne(
+            { busId },
+            { $set: { cusId: null } }
+        ).exec();
+    }
+
+    async deleteBusiness(busId: string): Promise<void> {
+        await this.businessModel.deleteOne({ busId }).exec();
+    }
+
+    async linkCustomerToBusiness(busId: string, cusId: string): Promise<Business | null> {
+        const updated = await this.businessModel
+            .findOneAndUpdate({ busId }, { cusId }, { new: true })
+            .exec();
+        return updated;
     }
 }

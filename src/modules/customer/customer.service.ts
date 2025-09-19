@@ -48,11 +48,12 @@ export class CustomerService {
     }
 
     async findAllByUserId(userId: string): Promise<Customer[]> {
+        return this.customerModel.find().populate('businesses').exec();
         return this.customerModel.find({ owner: userId }).populate('businesses').exec();
     }
 
     async findById(id: string): Promise<Customer | null> {
-        return this.customerModel.findOne({ cusId: id }).populate('businesses').exec() || {};
+        return this.customerModel.findOne({ cusId: id }).populate({ path: 'businesses', select: 'busId name' }).exec() || {};
 
     }
 }
