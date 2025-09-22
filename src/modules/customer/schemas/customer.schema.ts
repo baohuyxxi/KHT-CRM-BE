@@ -50,11 +50,18 @@ export class Customer {
 
 export const CustomerSchema = SchemaFactory.createForClass(Customer);
 
+CustomerSchema.virtual('orders', {
+  ref: 'Order',           // model Order
+  localField: 'cusId',       // field Customer
+  foreignField: 'cusId', // field trong Order
+  justOne: false,            // nhiều order
+});
+
 CustomerSchema.virtual('businesses', {
-    ref: 'Business',           // model Business
-    localField: 'cusId',       // field Customer
-    foreignField: 'cusId', // field trong Business
-    justOne: false,            // nhiều business
+  ref: 'Business',           // model Business
+  localField: 'cusId',       // field Customer
+  foreignField: 'cusId', // field trong Business
+  justOne: false,            // nhiều business
 });
 CustomerSchema.set('toObject', { virtuals: true });
 CustomerSchema.set('toJSON', { virtuals: true });
