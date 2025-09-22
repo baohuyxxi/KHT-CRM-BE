@@ -9,6 +9,12 @@ export class ResponseDto<TData> {
   message: string;
 
   data: TData;
+
+  @ApiProperty()
+  page: number;
+
+  @ApiProperty()
+  totalPages: number;
 }
 
 // ✅ Factory cho single object

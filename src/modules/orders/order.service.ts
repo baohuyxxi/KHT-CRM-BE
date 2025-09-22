@@ -53,10 +53,17 @@ export class OrderService {
         return updated;
     }
 
-    async findAllByUserId(userId: string): Promise<Order[]> {
-        return this.orderModel
-            .find({ owner: userId })
+    async findAllByUserId(userId: string, type: string, limit: number, page: number): Promise<{ data: Order[]; totalPages: number; page: number; }> {
+        const orders = await this.orderModel
+            .find({ type })
+            .limit(limit)
+            .skip((page - 1) * limit)
             .exec();
+        return {
+            data: orders,
+            page,
+            totalPages: Math.ceil(await this.orderModel.countDocuments({ type }) / limit)
+        }
     }
 
     async findAll(): Promise<Order[]> {
@@ -71,5 +78,90 @@ export class OrderService {
                 .findOne({ ordId: id })
                 .exec()) || null
         );
+    }
+
+    async extendOrder(id: string, data: any): Promise<Order | null> {
+        await this.orderModel
+            .findOneAndUpdate({ ordId: id }, { extend: true }, { new: true })
+            .exec();
+        return await this.createOrder(data);
+    }
+
+    async getOrderOfCustomer(cusId: string): Promise<Order[]> {
+        return this.orderModel.find({ cusId }).exec();
+    }
+
+    async filterOrders(
+        type: string,
+        search: string,
+        name: string,
+        reqType: string,
+        startDate: Date,
+        endDate: Date,
+        paymentStatus: string,
+        status: string,
+        limit: number,
+        page: number
+    ): Promise<{ data: Order[]; page: number; totalPages: number }> {
+        const query: any = {};
+
+        // ✅ Search nhiều field
+        if (search) {
+            const regex = new RegExp(search, "i");
+            query.$or = [
+                { ordId: regex },
+                { busName: regex },
+                { cusName: regex },
+                { busId: regex },
+                { cusId: regex },
+                { cusCitizenId: regex },
+                { busTaxId: regex },
+            ];
+        }
+
+        // ✅ Lọc theo khoảng ngày (registerDate)
+        if (startDate || endDate) {
+            query.registerDate = {};
+            if (startDate) query.registerDate.$gte = startDate;
+            if (endDate) query.registerDate.$lte = endDate;
+        }
+
+        // ✅ Loại khách hàng
+        if (type) {
+            query.type = type;
+        }
+
+        // ✅ Loại đơn hàng
+        if (reqType) {
+            query.reqType = reqType;
+        }
+
+        // ✅ Tìm theo name (regex)
+        if (name) {
+            query.name = new RegExp(name, "i");
+        }
+
+        // ✅ Thanh toán
+        if (paymentStatus) {
+            query.paymentStatus = paymentStatus;
+        }
+
+        // ✅ Trạng thái đơn hàng
+        if (status) {
+            query.status = status;
+        }
+
+        // 🔥 Pagination
+        const skip = (page - 1) * limit;
+        const [data, total] = await Promise.all([
+            this.orderModel.find(query).skip(skip).limit(limit).exec(),
+            this.orderModel.countDocuments(query).exec(),
+        ]);
+
+        return {
+            data,
+            page,
+            totalPages: Math.ceil(total / limit),
+        };
     }
 }

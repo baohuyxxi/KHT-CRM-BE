@@ -8,6 +8,7 @@ import {
     Req,
     UseGuards,
     NotFoundException,
+    Query,
 } from '@nestjs/common';
 import { OrderService } from './order.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
@@ -45,9 +46,9 @@ export class OrderController {
     @Get()
     @UseGuards(JwtAuthGuard, PermissionsGuard)
     @Permissions(Permission.ORDER_READ_ANY)
-    async getAllOrders(@Req() req: express.Request) {
+    async getAllOrders(@Req() req: express.Request, @Query('page') page = 1, @Query('limit') limit = 50, @Query('type') type: string = 'SP') {
         // const user = req.user as { userId: string; roles: string[] };
-        return await this.orderService.findAll();
+        return await this.orderService.findAllByUserId('', type, limit, page);
     }
 
     @Get('/:id')
@@ -55,5 +56,34 @@ export class OrderController {
     @Permissions(Permission.ORDER_READ_ANY)
     async getOrderById(@Param('id') id: string) {
         return await this.orderService.findById(id);
+    }
+
+    @Post('extend/:id')
+    @UseGuards(JwtAuthGuard, PermissionsGuard)
+    @Permissions(Permission.ORDER_CREATE)
+    async extendOrder(
+        @Param('id') id: string,
+        @Body() body: CreateOrderDto,
+    ) {
+        const existingOrder = await this.orderService.findById(id);
+        if (!existingOrder) {
+            throw new NotFoundException(`Order with id ${id} not found.`);
+        }
+        return await this.orderService.extendOrder(id, body);
+    }
+
+    @Get('customer/:id')
+    @UseGuards(JwtAuthGuard, PermissionsGuard)
+    @Permissions(Permission.ORDER_READ_ANY)
+    async getOrdersByCustomer(@Param('id') id: string) {
+        return await this.orderService.getOrderOfCustomer(id);
+    }
+
+    @Get('filter/search')
+    @UseGuards(JwtAuthGuard, PermissionsGuard)
+    @Permissions(Permission.ORDER_READ_ANY)
+    async filterOrders(@Query() query: any) {
+        const { type, search, name, reqType, startDate, endDate, paymentStatus, status, limit, page } = query;
+        return await this.orderService.filterOrders(type, search, name, reqType, startDate, endDate, paymentStatus, status, limit, page);
     }
 }

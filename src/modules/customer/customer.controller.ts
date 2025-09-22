@@ -9,6 +9,7 @@ import {
   Put,
   UseGuards,
   Req,
+  Query,
 } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { PermissionsGuard } from '../auth/guards/permissions.guard';
@@ -21,7 +22,7 @@ import express from 'express';
 @ApiTags('Customers')
 @Controller('customers')
 export class CustomerController {
-  constructor(private readonly customerService: CustomerService) {}
+  constructor(private readonly customerService: CustomerService) { }
 
   @Post('add')
   @UseGuards(JwtAuthGuard, PermissionsGuard)
@@ -44,9 +45,18 @@ export class CustomerController {
   @Get()
   @UseGuards(JwtAuthGuard, PermissionsGuard)
   @Permissions(Permission.CUSTOMER_READ_ANY)
-  async getAllCustomers(@Req() req: express.Request) {
+  async getAllCustomers(
+    @Req() req: express.Request,
+    @Query('type') type?: string,
+    @Query('page') page?: number,
+    @Query('limit') limit?: number,
+  ) {
+    type = type || 'Đã là khách hàng';
+    page = page || 1;
+    limit = limit || 10;
     const user = req.user as { userId: string; roles: string[] };
-    return await this.customerService.findAllByUserId(user.userId);
+    const result = await this.customerService.findAllByUserId(user.userId, type, page, limit);
+    return result;
   }
 
   @Get('/:id')

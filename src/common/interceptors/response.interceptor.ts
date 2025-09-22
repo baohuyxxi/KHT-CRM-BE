@@ -9,12 +9,11 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 @Injectable()
 export class ResponseInterceptor<T>
-  implements NestInterceptor<T, { success: boolean; data: T; message?: string }>
-{
+  implements NestInterceptor<T, { success: boolean; data: T; message?: string }> {
   intercept(
     context: ExecutionContext,
     next: CallHandler,
-  ): Observable<{ success: boolean; data: T; message?: string }> {
+  ): Observable<{ success: boolean; data: T; message?: string, page?: number, totalPages?: number }> {
     return next.handle().pipe(
       map((res: any) => {
         // Nếu controller return { data, message }
@@ -24,6 +23,8 @@ export class ResponseInterceptor<T>
             message: res.message || 'Request successful',
             data: res.data,
             error: res.error || null,
+            page: res.page || null,
+            totalPages: res.totalPages || null,
           };
         }
 
@@ -33,6 +34,8 @@ export class ResponseInterceptor<T>
           message: 'Request successful',
           data: res,
           error: null,
+          page: null,
+          totalPages: null,
         };
       }),
     );

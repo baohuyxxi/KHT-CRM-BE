@@ -61,6 +61,9 @@ export class Order {
 
     @Prop({ type: String, enum: ['Mới', 'Đang xử lý', 'Hoàn thành', 'Hủy'], default: 'Mới' })
     status: string;
+
+    @Prop({ type: Boolean, default: false })
+    extend: boolean;
 }
 
 export const OrderSchema = SchemaFactory.createForClass(Order);
@@ -79,9 +82,13 @@ export class Counter {
 
 export const CounterSchema = SchemaFactory.createForClass(Counter);
 
-//
-// Middleware tự sinh orderId giống cusId
-//
+OrderSchema.virtual('cusInfo', {
+    ref: 'Customer',           // model Customer
+    localField: 'cusId',       // field Order
+    foreignField: 'cusId', // field trong Customer
+    justOne: true,             // 1 customer
+});
+
 OrderSchema.post<OrderDocument>('save', async function (doc, next) {
     try {
         if (doc.isNew && !doc.ordId) {

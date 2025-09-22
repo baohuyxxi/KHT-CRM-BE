@@ -47,13 +47,39 @@ export class CustomerService {
         return updated;
     }
 
-    async findAllByUserId(userId: string): Promise<Customer[]> {
-        return this.customerModel.find().populate('businesses').exec();
-        return this.customerModel.find({ owner: userId }).populate('businesses').exec();
+    async findAllByUserId(
+        userId: string,
+        type: string,
+        page: number,
+        limit: number
+    ): Promise<{ data: Customer[]; page: number; totalPages: number }> {
+        const skip = (page - 1) * limit;
+
+        // Đếm tổng số bản ghi
+        const total = await this.customerModel.countDocuments({
+            owner: userId,
+            customerType: type,
+        });
+
+        const data = await this.customerModel
+            .find({ owner: userId, customerType: type })
+            .populate("businesses")
+            .populate("orders")
+            .skip(skip)
+            .limit(limit)
+            .exec();
+
+        const totalPages = Math.ceil(total / limit);
+
+        return {
+            data,
+            page,
+            totalPages,
+        };
     }
 
     async findById(id: string): Promise<Customer | null> {
-        return this.customerModel.findOne({ cusId: id }).populate({ path: 'businesses', select: 'busId name' }).exec() || {};
+        return this.customerModel.findOne({ cusId: id }).populate({ path: 'businesses', select: 'busId name taxId' }).exec() || {};
 
     }
 }
