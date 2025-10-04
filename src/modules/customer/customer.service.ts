@@ -65,6 +65,7 @@ export class CustomerService {
             .find({ owner: userId, customerType: type })
             .populate("businesses")
             .populate("orders")
+            .sort({ createdAt: -1 })
             .skip(skip)
             .limit(limit)
             .exec();

@@ -55,7 +55,7 @@ export class BusinessService {
         return this.businessModel.find({ owner: userId }).populate('cusInfo').populate({ //sửa userId lại
             path: 'ownerInfo',
             select: 'userId name email', // chỉ lấy các field cần
-        }).exec();
+        }).sort({ createdAt: -1 }).exec();
     }
 
     async deleteLinkedCustomerFromBusiness(busId: string): Promise<void> {

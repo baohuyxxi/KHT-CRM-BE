@@ -75,8 +75,8 @@ export class OrderController {
     @Get('customer/:id')
     @UseGuards(JwtAuthGuard, PermissionsGuard)
     @Permissions(Permission.ORDER_READ_ANY)
-    async getOrdersByCustomer(@Param('id') id: string) {
-        return await this.orderService.getOrderOfCustomer(id);
+    async getOrdersByCustomer(@Param('id') id: string, @Query('page') page = 1, @Query('limit') limit = 50) {
+        return await this.orderService.getOrderOfCustomer(id, limit, page);
     }
 
     @Get('filter/search')
