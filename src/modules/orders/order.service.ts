@@ -57,6 +57,7 @@ export class OrderService {
         const orders = await this.orderModel
             .find({ type })
             .limit(limit)
+            .sort({ createdAt: -1 })
             .skip((page - 1) * limit)
             .exec();
         return {
@@ -87,8 +88,16 @@ export class OrderService {
         return await this.createOrder(data);
     }
 
-    async getOrderOfCustomer(cusId: string): Promise<Order[]> {
-        return this.orderModel.find({ cusId }).exec();
+    async getOrderOfCustomer(cusId: string, limit: number, page: number): Promise<{ data: Order[]; page: number; totalPages: number }> {
+        const [result, total] = await Promise.all([
+            this.orderModel.find({ cusId }).sort({ createdAt: -1 }).skip((page - 1) * limit).limit(limit).exec(),
+            this.orderModel.countDocuments({ cusId }).exec()
+        ]);
+        return {
+            data: result,
+            page,
+            totalPages: Math.ceil(total / limit)
+        };
     }
 
     async filterOrders(
@@ -154,7 +163,7 @@ export class OrderService {
         // 🔥 Pagination
         const skip = (page - 1) * limit;
         const [data, total] = await Promise.all([
-            this.orderModel.find(query).skip(skip).limit(limit).exec(),
+            this.orderModel.find(query).sort({ createdAt: -1 }).skip(skip).limit(limit).exec(),
             this.orderModel.countDocuments(query).exec(),
         ]);
 
