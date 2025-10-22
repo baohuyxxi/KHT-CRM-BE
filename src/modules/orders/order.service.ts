@@ -173,4 +173,8 @@ export class OrderService {
             totalPages: Math.ceil(total / limit),
         };
     }
+
+    async deleteOrder(id: string): Promise<void> {
+        await this.orderModel.deleteOne({ ordId: id }).exec();
+    }
 }

@@ -83,4 +83,14 @@ export class CustomerService {
         return this.customerModel.findOne({ cusId: id }).populate({ path: 'businesses', select: 'busId name taxId' }).exec() || {};
 
     }
+
+    async deleteCustomer(id: string): Promise<Customer | null> {
+        const deleted = await this.customerModel
+            .findOneAndDelete({ cusId: id })
+            .exec();
+        if (!deleted) {
+            throw new NotFoundException(`Customer with id ${id} not found or you do not have permission to delete it.`);
+        }
+        return deleted;
+    }
 }

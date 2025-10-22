@@ -9,6 +9,7 @@ import {
     UseGuards,
     NotFoundException,
     Query,
+    Delete,
 } from '@nestjs/common';
 import { OrderService } from './order.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
@@ -85,5 +86,12 @@ export class OrderController {
     async filterOrders(@Query() query: any) {
         const { type, search, name, reqType, startDate, endDate, paymentStatus, status, limit, page } = query;
         return await this.orderService.filterOrders(type, search, name, reqType, startDate, endDate, paymentStatus, status, limit, page);
+    }
+
+    @Delete('delete/:id')
+    @UseGuards(JwtAuthGuard, PermissionsGuard)
+    @Permissions(Permission.ORDER_DELETE_OWN)
+    async deleteOrder(@Param('id') id: string) {
+        return await this.orderService.deleteOrder(id);
     }
 }
