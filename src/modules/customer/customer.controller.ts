@@ -65,4 +65,11 @@ export class CustomerController {
   async getCustomerById(@Param('id') id: string) {
     return await this.customerService.findById(id);
   }
+
+  @Delete('delete/:id')
+  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @Permissions(Permission.CUSTOMER_DELETE_ANY)
+  async deleteCustomer(@Param('id') id: string) {
+    return await this.customerService.deleteCustomer(id);
+  }
 }
