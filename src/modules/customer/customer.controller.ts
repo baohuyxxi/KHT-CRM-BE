@@ -72,4 +72,35 @@ export class CustomerController {
   async deleteCustomer(@Param('id') id: string) {
     return await this.customerService.deleteCustomer(id);
   }
+
+  @Get('invoices/get-code')
+  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @Permissions(Permission.CUSTOMER_READ_ANY)
+  async getInvoicesOfCustomer() {
+    return await this.customerService.getCounterInvoice();
+  }
+
+  @Post('invoices/:cusId/:invoiceCode')
+  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @Permissions(Permission.CUSTOMER_UPDATE_ANY)
+  async addInvoiceToCustomer(
+    @Param('cusId') cusId: string,
+    @Param('invoiceCode') invoiceCode: string,
+    @Body("file") file: string,
+    @Body("invoiceCode") invoiceCodeBody: string,
+    @Body("ordIds") ordIds: string[],
+  ) {
+    const invoiceData = { invoiceCode: invoiceCodeBody, file, ordIds };
+    return await this.customerService.saveInvoice(cusId, invoiceCode, invoiceData);
+  }
+
+  @Delete('invoices/:cusId/:invoiceCode')
+  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @Permissions(Permission.CUSTOMER_UPDATE_ANY)
+  async removeInvoiceFromCustomer(
+    @Param('cusId') cusId: string,
+    @Param('invoiceCode') invoiceCode: string,
+  ) {
+    return await this.customerService.removeInvoice(cusId, invoiceCode);
+  }
 }
