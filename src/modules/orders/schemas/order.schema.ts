@@ -64,6 +64,12 @@ export class Order {
 
     @Prop({ type: Boolean, default: false })
     extend: boolean;
+
+    @Prop({ type: [String], default: [] })
+    files?: string[];
+
+    @Prop({ type: Boolean, default: false })
+    issued?: boolean;
 }
 
 export const OrderSchema = SchemaFactory.createForClass(Order);

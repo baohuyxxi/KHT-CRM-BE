@@ -177,4 +177,17 @@ export class OrderService {
     async deleteOrder(id: string): Promise<void> {
         await this.orderModel.deleteOne({ ordId: id }).exec();
     }
+
+    async markOrderAsIssued(id: string): Promise<Order | null> {
+        const updated = await this.orderModel
+            .findOneAndUpdate({ ordId: id }, { issued: true }, { new: true })
+            .exec();
+
+        if (!updated) {
+            throw new NotFoundException(
+                `Order with id ${id} not found or you do not have permission to update it.`,
+            );
+        }
+        return updated;
+    }
 }

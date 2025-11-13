@@ -70,14 +70,15 @@ export class PdfController {
     }))
     async uploadFile(
         @UploadedFile() file: Express.Multer.File,
-        @Body() uploadFileDto: any,
+        @Body('uploadFileDto') uploadFileDto: string, // 🧩 lấy đúng chuỗi JSON
     ) {
+        const parsedDto = JSON.parse(uploadFileDto);
         if (!file || !file.buffer) {
             throw new BadRequestException('File not found or buffer is missing');
         }
 
         try {
-            return await this.cloudinaryService.uploadPDF(file, uploadFileDto);
+            return await this.cloudinaryService.uploadPDF(file, parsedDto);
         } catch (err) {
             throw new InternalServerErrorException(err.message || 'Upload failed');
         }

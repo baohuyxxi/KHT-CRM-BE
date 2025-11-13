@@ -20,6 +20,12 @@ export class Customer {
   @Prop({ type: String, index: true })
   citizenId: string; // CCCD
 
+  @Prop({ type: String, default: null })
+  frontCitizenId?: string;
+
+  @Prop({ type: String, default: null })
+  backCitizenId?: string;
+
   @Prop({ type: String })
   firstName?: string;
 
@@ -46,6 +52,20 @@ export class Customer {
 
   @Prop({ type: String, enum: CustomerType, required: true })
   customerType: CustomerType;
+
+  @Prop({
+    type: [
+      {
+        invoiceCode: { type: String, required: true },
+        file: { type: String, required: true },
+      },
+    ],
+    default: [],
+  })
+  invoices?: {
+    invoiceCode: string;
+    file: string;
+  }[];
 }
 
 export const CustomerSchema = SchemaFactory.createForClass(Customer);
