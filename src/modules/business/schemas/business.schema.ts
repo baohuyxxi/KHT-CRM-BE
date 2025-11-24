@@ -56,6 +56,12 @@ export class Business {
     // Liên kết ngược tới Customer
     @Prop({ type: String })
     cusId: string; // lưu cusId của Customer
+
+    @Prop({ type: [String], default: [] })
+    stamp: string[]; // mảng đường dẫn ảnh con dấu doanh nghiệp
+
+    @Prop({ type: String })
+    notes?: string;
 }
 
 export const BusinessSchema = SchemaFactory.createForClass(Business);
